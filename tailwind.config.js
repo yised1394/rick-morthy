@@ -7,15 +7,26 @@ export default {
   theme: {
     extend: {
       colors: {
+        primary: {
+          100: '#EEE3FF',
+          600: '#8054C7',
+          700: '#5A3696',
+          DEFAULT: '#8054C7',
+        },
+        secondary: {
+          600: '#63D838',
+          DEFAULT: '#63D838',
+        },
+        // Legacy brand colors mapped to new primary
         brand: {
-          DEFAULT: '#7c3aed',
-          light: '#a78bfa',
-          dark: '#5b21b6',
+          DEFAULT: '#8054C7',
+          light: '#EEE3FF',
+          dark: '#5A3696',
         },
         danger: '#ef4444',
-        success: '#22c55e',
+        success: '#63D838',
         warning: '#f59e0b',
-        background: '#fafafa',
+        background: '#FFFFFF',
         foreground: '#171717',
         card: {
           DEFAULT: '#ffffff',
@@ -24,6 +35,16 @@ export default {
         muted: {
           DEFAULT: '#f5f5f5',
           foreground: '#737373',
+        },
+        gray: {
+          100: '#F3F4F6',
+          200: '#E5E7EB',
+          300: '#D1D5DB',
+          400: '#9CA3AF',
+          500: '#6B7280',
+          600: '#4B5563',
+          700: '#374151',
+          800: '#1F2937',
         },
       },
       fontFamily: {

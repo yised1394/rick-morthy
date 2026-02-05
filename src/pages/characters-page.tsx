@@ -1,22 +1,14 @@
 import { MainLayout } from '@/shared/components/layout/main-layout';
-import { CharacterList } from '@/features/characters/components/character-list';
+import { CharacterExplorer } from '@/features/characters/components/character-explorer';
 
 /**
  * Characters list page with search, filter, and pagination.
+ * Uses the new Figma-based design with split layout on desktop.
  */
 function CharactersPage() {
   return (
     <MainLayout>
-      <div className="space-y-6">
-        <div>
-          <h1 className="text-3xl font-bold text-foreground">Characters</h1>
-          <p className="mt-2 text-neutral-600">
-            Browse all characters from the Rick and Morty universe
-          </p>
-        </div>
-
-        <CharacterList />
-      </div>
+      <CharacterExplorer />
     </MainLayout>
   );
 }

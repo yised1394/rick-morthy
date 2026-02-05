@@ -6,6 +6,7 @@ interface FavoriteButtonProps {
   readonly characterId: CharacterId;
   readonly size?: 'sm' | 'md' | 'lg';
   readonly onClick?: (event: MouseEvent) => void;
+  readonly variant?: 'default' | 'minimal';
 }
 
 const sizeClasses = {
@@ -22,11 +23,13 @@ const iconSizes = {
 
 /**
  * Toggle button for adding/removing characters from favorites.
+ * Uses green heart (#63D838) for favorited state per Figma design.
  */
 export function FavoriteButton({
   characterId,
   size = 'md',
   onClick,
+  variant = 'default',
 }: FavoriteButtonProps) {
   const { toggleFavorite, isFavorite } = useFavorites();
   const isFav = isFavorite(characterId);
@@ -35,6 +38,34 @@ export function FavoriteButton({
     onClick?.(event);
     toggleFavorite(characterId);
   };
+
+  if (variant === 'minimal') {
+    return (
+      <button
+        type="button"
+        onClick={handleClick}
+        aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
+        aria-pressed={isFav}
+        className="p-1 transition-all hover:scale-110 focus-visible:outline-none"
+      >
+        <svg
+          className={`${iconSizes[size]} transition-colors ${
+            isFav ? 'fill-secondary-600 text-secondary-600' : 'fill-none text-gray-300'
+          }`}
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+          strokeWidth={2}
+          aria-hidden="true"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+          />
+        </svg>
+      </button>
+    );
+  }
 
   return (
     <button
@@ -48,12 +79,12 @@ export function FavoriteButton({
         bg-white/90 backdrop-blur-sm
         shadow-md transition-all
         hover:scale-110 hover:bg-white
-        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand
+        focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-primary-600
       `}
     >
       <svg
         className={`${iconSizes[size]} transition-colors ${
-          isFav ? 'fill-danger text-danger' : 'fill-none text-neutral-500'
+          isFav ? 'fill-secondary-600 text-secondary-600' : 'fill-none text-gray-400'
         }`}
         viewBox="0 0 24 24"
         stroke="currentColor"
