@@ -7,6 +7,7 @@ export const ROUTES = {
   CHARACTERS: '/characters',
   CHARACTER_DETAIL: '/characters/:id',
   FAVORITES: '/favorites',
+  DELETED: '/deleted',
   NOT_FOUND: '*',
 } as const satisfies Record<string, string>;
 

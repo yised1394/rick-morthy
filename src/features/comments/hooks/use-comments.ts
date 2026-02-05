@@ -5,6 +5,7 @@ import {
   getCommentsByCharacterId,
   addComment,
   deleteComment as deleteCommentFromStorage,
+  updateComment as updateCommentInStorage,
 } from '../services/comments.storage';
 
 /**
@@ -15,7 +16,7 @@ import {
  *
  * @example
  * ```tsx
- * const { comments, addNewComment, removeComment, isLoading } = useComments(characterId);
+ * const { comments, addNewComment, editComment, removeComment, isLoading } = useComments(characterId);
  * ```
  */
 export function useComments(characterId: CharacterId) {
@@ -38,9 +39,22 @@ export function useComments(characterId: CharacterId) {
       };
 
       const created = addComment(newComment);
-      setComments((prev) => [...prev, created]);
+      setComments((prev) => [created, ...prev]); // Add to beginning for newest first
 
       return created;
+    },
+    [characterId]
+  );
+
+  const editComment = useCallback(
+    (commentId: Comment['id'], newText: string) => {
+      const updated = updateCommentInStorage(characterId, commentId, newText);
+      if (updated) {
+        setComments((prev) =>
+          prev.map((c) => (c.id === commentId ? updated : c))
+        );
+      }
+      return updated;
     },
     [characterId]
   );
@@ -56,6 +70,7 @@ export function useComments(characterId: CharacterId) {
   return {
     comments,
     addNewComment,
+    editComment,
     removeComment,
     isLoading,
     count: comments.length,

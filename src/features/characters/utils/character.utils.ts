@@ -23,12 +23,12 @@ export function sortCharactersByName<T extends CharacterBasic>(
  * Filter out deleted characters from a list.
  *
  * @param characters - Array of characters
- * @param deletedIds - Set of deleted character IDs
+ * @param deletedIds - Set of deleted character IDs (supports ReadonlySet)
  * @returns Filtered array without deleted characters
  */
 export function filterDeletedCharacters<T extends CharacterBasic>(
   characters: readonly T[],
-  deletedIds: Set<string>
+  deletedIds: ReadonlySet<string>
 ): T[] {
   return characters.filter((char) => !deletedIds.has(char.id));
 }

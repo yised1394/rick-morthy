@@ -13,32 +13,33 @@
     "type-check": "tsc --noEmit"
   },
   "dependencies": {
+    "@apollo/client": "3.11.8",
+    "graphql": "16.9.0",
     "react": "18.3.1",
     "react-dom": "18.3.1",
     "react-router-dom": "6.26.2",
-    "@apollo/client": "3.11.8",
-    "graphql": "16.9.0"
+    "sonner": "^1.7.1"
   },
   "devDependencies": {
+    "@testing-library/jest-dom": "6.6.3",
+    "@testing-library/react": "16.1.0",
+    "@testing-library/user-event": "14.5.2",
     "@types/react": "18.3.12",
     "@types/react-dom": "18.3.1",
-    "typescript": "5.6.3",
-    "vite": "6.0.7",
-    "@vitejs/plugin-react": "4.3.4",
-    "tailwindcss": "3.4.17",
-    "postcss": "8.4.49",
-    "autoprefixer": "10.4.20",
-    "vite-plugin-pwa": "0.21.1",
-    "workbox-window": "7.3.0",
-    "vitest": "2.1.8",
-    "@testing-library/react": "16.1.0",
-    "@testing-library/jest-dom": "6.6.3",
-    "@testing-library/user-event": "14.5.2",
-    "jsdom": "25.0.1",
-    "eslint": "9.18.0",
     "@typescript-eslint/eslint-plugin": "8.20.0",
     "@typescript-eslint/parser": "8.20.0",
+    "@vitejs/plugin-react": "4.3.4",
+    "autoprefixer": "10.4.20",
+    "eslint": "9.18.0",
     "eslint-plugin-react-hooks": "5.1.0",
-    "eslint-plugin-react-refresh": "0.4.18"
+    "eslint-plugin-react-refresh": "0.4.18",
+    "jsdom": "25.0.1",
+    "postcss": "8.4.49",
+    "tailwindcss": "3.4.17",
+    "typescript": "5.6.3",
+    "vite": "6.0.7",
+    "vite-plugin-pwa": "0.21.1",
+    "vitest": "2.1.8",
+    "workbox-window": "7.3.0"
   }
 }

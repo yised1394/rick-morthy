@@ -32,16 +32,6 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     }
   });
 
-  const [deletedIds, setDeletedIds] = useState<Set<CharacterId>>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.DELETED_CHARACTERS);
-      const parsed = stored ? (JSON.parse(stored) as string[]) : [];
-      return new Set(parsed.map(createCharacterId));
-    } catch {
-      return new Set();
-    }
-  });
-
   useEffect(() => {
     localStorage.setItem(
       STORAGE_KEYS.FAVORITES,
@@ -50,27 +40,11 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
   }, [favorites]);
 
   useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEYS.DELETED_CHARACTERS,
-      JSON.stringify([...deletedIds])
-    );
-  }, [deletedIds]);
-
-  useEffect(() => {
     const handleStorageChange = (event: StorageEvent) => {
       if (event.key === STORAGE_KEYS.FAVORITES && event.newValue) {
         try {
           const parsed = JSON.parse(event.newValue) as string[];
           setFavorites(new Set(parsed.map(createCharacterId)));
-        } catch {
-          // Ignore parse errors
-        }
-      }
-
-      if (event.key === STORAGE_KEYS.DELETED_CHARACTERS && event.newValue) {
-        try {
-          const parsed = JSON.parse(event.newValue) as string[];
-          setDeletedIds(new Set(parsed.map(createCharacterId)));
         } catch {
           // Ignore parse errors
         }
@@ -98,41 +72,10 @@ export function FavoritesProvider({ children }: FavoritesProviderProps) {
     [favorites]
   );
 
-  const softDelete = useCallback((id: CharacterId) => {
-    setDeletedIds((prev) => {
-      const next = new Set(prev);
-      next.add(id);
-      return next;
-    });
-
-    setFavorites((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
-  }, []);
-
-  const restoreCharacter = useCallback((id: CharacterId) => {
-    setDeletedIds((prev) => {
-      const next = new Set(prev);
-      next.delete(id);
-      return next;
-    });
-  }, []);
-
-  const isDeleted = useCallback(
-    (id: CharacterId) => deletedIds.has(id),
-    [deletedIds]
-  );
-
   const value: FavoritesContextValue = {
     favorites,
-    deletedIds,
     toggleFavorite,
     isFavorite,
-    softDelete,
-    restoreCharacter,
-    isDeleted,
     count: favorites.size,
   };
 
@@ -156,3 +99,4 @@ export function useFavoritesContext(): FavoritesContextValue {
 
   return context;
 }
+

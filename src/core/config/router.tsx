@@ -6,7 +6,6 @@ import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 const HomePage = lazy(() => import('@/pages/home-page'));
 const CharactersPage = lazy(() => import('@/pages/characters-page'));
 const CharacterDetailPage = lazy(() => import('@/pages/character-detail-page'));
-const FavoritesPage = lazy(() => import('@/pages/favorites-page'));
 const NotFoundPage = lazy(() => import('@/pages/not-found-page'));
 
 /**
@@ -56,7 +55,17 @@ export const router = createBrowserRouter([
     path: ROUTES.FAVORITES,
     element: (
       <Suspense fallback={<PageLoader />}>
-        <FavoritesPage />
+        {/* Redirect to characters page for unified view */}
+        <CharactersPage />
+      </Suspense>
+    ),
+  },
+  {
+    path: ROUTES.DELETED,
+    element: (
+      <Suspense fallback={<PageLoader />}>
+        {/* Redirect to characters page for unified view */}
+        <CharactersPage />
       </Suspense>
     ),
   },

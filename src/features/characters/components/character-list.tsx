@@ -8,7 +8,7 @@ import { Pagination } from './pagination';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { EmptyState } from '@/shared/components/ui/empty-state';
-import { useFavorites } from '@/features/favorites/hooks/use-favorites';
+import { useSoftDeleteCharacters } from '@/features/soft-delete';
 import { sortCharactersByName, filterDeletedCharacters } from '../utils/character.utils';
 import type { CharacterFilter } from '../types/character.types';
 
@@ -17,7 +17,7 @@ import type { CharacterFilter } from '../types/character.types';
  */
 export function CharacterList() {
   const { filters, updateFilters, resetFilters, setPage } = useCharacterFilters();
-  const { deletedIds } = useFavorites();
+  const { deletedCharacterIds } = useSoftDeleteCharacters();
 
   const apiFilter: CharacterFilter = {
     name: filters.name || undefined,
@@ -36,7 +36,7 @@ export function CharacterList() {
 
     let characters = filterDeletedCharacters(
       data.characters.results,
-      deletedIds
+      deletedCharacterIds as ReadonlySet<string>
     );
 
     if (filters.sortBy) {
@@ -44,7 +44,7 @@ export function CharacterList() {
     }
 
     return characters;
-  }, [data?.characters.results, deletedIds, filters.sortBy]);
+  }, [data?.characters.results, deletedCharacterIds, filters.sortBy]);
 
   if (loading && !data) {
     return (

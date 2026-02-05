@@ -3,8 +3,11 @@ import { useCharacterById } from '../hooks/use-character-by-id';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { FavoriteButton } from '@/features/favorites/components/favorite-button';
+import { DeleteButton } from '@/features/soft-delete/components/delete-button';
 import { CommentSection } from '@/features/comments/components/comment-section';
+import { useSoftDeleteCharacters } from '@/features/soft-delete';
 import { ROUTES } from '@/core/config/routes.config';
+import { createCharacterId } from '@/core/types/global.types';
 import type { Character } from '../types/character.types';
 
 interface CharacterDetailProps {
@@ -22,6 +25,8 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
   const id = characterId ?? routeId ?? '';
   const { data, loading, error, refetch } = useCharacterById(id);
 
+  const { isDeleted, restoreCharacter } = useSoftDeleteCharacters();
+
   const handleBack = () => {
     if (onBack) {
       onBack();
@@ -29,6 +34,51 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
       navigate(-1);
     }
   };
+
+  // Check if character is soft deleted
+  if (id && isDeleted(createCharacterId(id))) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-4">
+        <div className="bg-amber-50 rounded-full p-4 mb-4">
+          <svg
+            className="h-12 w-12 text-amber-500"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={1.5}
+              d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+            />
+          </svg>
+        </div>
+        <h2 className="text-xl font-bold text-gray-800 mb-2">
+          Character Deleted
+        </h2>
+        <p className="text-gray-500 mb-6 max-w-md">
+          This character has been removed from your list. You can restore it to view details again.
+        </p>
+        <div className="flex gap-3">
+          <button
+            type="button"
+            onClick={() => restoreCharacter(createCharacterId(id))}
+            className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition-colors"
+          >
+            Restore Character
+          </button>
+          <button
+            type="button"
+            onClick={handleBack}
+            className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors"
+          >
+            Back to List
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (loading) {
     return (
@@ -61,39 +111,17 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
   const character = data.character;
 
   return (
-    <div className="h-full">
-      {/* Back button */}
-      <button
-        type="button"
-        onClick={handleBack}
-        className="text-primary-600 hover:text-primary-700 transition-colors mb-6"
-        aria-label="Go back"
-      >
-        <svg
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
-      </button>
-
+    <div className="h-full px-[100px]">
       {/* Character info */}
-      <div className="space-y-6">
-        {/* Avatar with favorite indicator */}
+      <div className="space-y-6 pt-10">
+        {/* Avatar with action buttons */}
         <div className="relative inline-block">
           <img
             src={character.image}
             alt={character.name}
             className="w-20 h-20 rounded-full object-cover"
           />
-          <div className="absolute -bottom-1 -right-1">
+          <div className="absolute -bottom-1 -right-1 flex gap-1">
             <FavoriteButton
               characterId={character.id}
               size="sm"
@@ -102,10 +130,17 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
           </div>
         </div>
 
-        {/* Name */}
-        <h1 className="text-2xl font-bold text-gray-800">
-          {character.name}
-        </h1>
+        {/* Name and Delete button */}
+        <div className="flex items-center justify-between gap-4">
+          <h1 className="text-2xl font-bold text-gray-800">
+            {character.name}
+          </h1>
+          <DeleteButton
+            characterId={character.id}
+            characterName={character.name}
+            size="md"
+          />
+        </div>
 
         {/* Info sections */}
         <div className="space-y-4">
@@ -115,12 +150,10 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
         </div>
       </div>
 
-      {/* Comments section - only show on standalone page */}
-      {!characterId && (
-        <div className="mt-8">
-          <CommentSection characterId={character.id} />
-        </div>
-      )}
+      {/* Comments section - always show */}
+      <div className="mt-8">
+        <CommentSection characterId={character.id} />
+      </div>
     </div>
   );
 }
