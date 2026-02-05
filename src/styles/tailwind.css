@@ -1,0 +1,118 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .card {
+    @apply rounded-lg bg-card p-6 shadow-md;
+  }
+
+  .card-header {
+    @apply mb-4 border-b border-neutral-200 pb-4;
+  }
+
+  .card-title {
+    @apply text-xl font-semibold text-card-foreground;
+  }
+
+  .card-body {
+    @apply text-sm text-neutral-700;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md
+           px-4 py-2 text-sm font-medium transition-colors
+           focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-brand text-white hover:bg-brand-dark focus-visible:ring-brand;
+  }
+
+  .btn-secondary {
+    @apply bg-neutral-200 text-neutral-900 hover:bg-neutral-300 focus-visible:ring-neutral-400;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent hover:bg-neutral-100 text-neutral-700 focus-visible:ring-neutral-400;
+  }
+
+  .btn-danger {
+    @apply bg-danger text-white hover:opacity-90 focus-visible:ring-danger;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  .input {
+    @apply w-full rounded-md border border-neutral-300
+           bg-white px-4 py-2 text-sm
+           placeholder:text-neutral-400
+           focus:border-brand focus:outline-none focus:ring-2 focus:ring-brand/20
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-alive {
+    @apply bg-success/20 text-success;
+  }
+
+  .badge-dead {
+    @apply bg-danger/20 text-danger;
+  }
+
+  .badge-unknown {
+    @apply bg-neutral-200 text-neutral-600;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-md bg-neutral-200;
+  }
+
+  .container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl;
+  }
+
+  h2 {
+    @apply text-3xl;
+  }
+
+  h3 {
+    @apply text-2xl;
+  }
+
+  h4 {
+    @apply text-xl;
+  }
+
+  a {
+    @apply text-brand hover:text-brand-dark transition-colors;
+  }
+}
