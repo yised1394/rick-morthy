@@ -6,13 +6,14 @@ import { useCharacterById } from '../hooks/use-character-by-id';
 import { useFavorites } from '@/features/favorites/hooks/use-favorites';
 import { CharacterListItem } from './character-list-item';
 import { SearchBar } from './search-bar';
-import { FilterModal } from './filter-modal';
+import { FilterDropdown } from './filter-dropdown';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { EmptyState } from '@/shared/components/ui/empty-state';
 import { FavoriteButton } from '@/features/favorites/components/favorite-button';
 import { sortCharactersByName, filterDeletedCharacters } from '../utils/character.utils';
 import { getCharacterDetailRoute } from '@/core/config/routes.config';
+import type { CharacterFiltersState } from '../hooks/use-character-filters';
 import type { CharacterFilter, CharacterBasic } from '../types/character.types';
 import type { CharacterId } from '@/core/types/global.types';
 
@@ -29,7 +30,7 @@ export function CharacterExplorer() {
   const { filters, updateFilters } = useCharacterFilters();
   const { deletedIds, isFavorite } = useFavorites();
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // API filter
   const apiFilter: CharacterFilter = {
@@ -54,19 +55,26 @@ export function CharacterExplorer() {
     }
 
     const filtered = filterDeletedCharacters(data.characters.results, deletedIds);
-    let characters = filters.sortBy
+    const characters = filters.sortBy
       ? sortCharactersByName(filtered, filters.sortBy)
       : filtered;
 
     const starred = characters.filter((c) => isFavorite(c.id));
     const regular = characters.filter((c) => !isFavorite(c.id));
 
+    // Apply characterType filter
+    const showStarred = filters.characterType !== 'others';
+    const showRegular = filters.characterType !== 'starred';
+
+    const visibleStarred = showStarred ? starred : [];
+    const visibleRegular = showRegular ? regular : [];
+
     return {
-      starredCharacters: starred,
-      regularCharacters: regular,
-      totalResults: characters.length,
+      starredCharacters: visibleStarred,
+      regularCharacters: visibleRegular,
+      totalResults: visibleStarred.length + visibleRegular.length,
     };
-  }, [data?.characters.results, deletedIds, filters.sortBy, isFavorite]);
+  }, [data?.characters.results, deletedIds, filters.sortBy, filters.characterType, isFavorite]);
 
   // Count active filters
   const activeFiltersCount = useMemo(() => {
@@ -74,8 +82,9 @@ export function CharacterExplorer() {
     if (filters.status) count++;
     if (filters.species) count++;
     if (filters.gender) count++;
+    if (filters.characterType && filters.characterType !== 'all') count++;
     return count;
-  }, [filters]);
+  }, [filters.status, filters.species, filters.gender, filters.characterType]);
 
   const handleCharacterSelect = useCallback((character: CharacterBasic) => {
     setSelectedCharacterId(character.id);
@@ -124,7 +133,11 @@ export function CharacterExplorer() {
             activeFiltersCount={activeFiltersCount}
             searchValue={filters.name}
             onSearchChange={handleSearchChange}
-            onFilterClick={() => setIsFilterModalOpen(true)}
+            onFilterClick={() => setIsFilterOpen((prev) => !prev)}
+            isFilterOpen={isFilterOpen}
+            onFilterClose={() => setIsFilterOpen(false)}
+            filters={filters}
+            onFilterApply={updateFilters}
             selectedCharacterId={selectedCharacterId}
             onCharacterSelect={handleCharacterSelect}
           />
@@ -151,32 +164,32 @@ export function CharacterExplorer() {
           activeFiltersCount={activeFiltersCount}
           searchValue={filters.name}
           onSearchChange={handleSearchChange}
-          onFilterClick={() => setIsFilterModalOpen(true)}
+          onFilterClick={() => setIsFilterOpen((prev) => !prev)}
+          isFilterOpen={isFilterOpen}
+          onFilterClose={() => setIsFilterOpen(false)}
+          filters={filters}
+          onFilterApply={updateFilters}
           onCharacterClick={handleMobileCharacterClick}
         />
       </div>
-
-      {/* Filter Modal */}
-      <FilterModal
-        isOpen={isFilterModalOpen}
-        onClose={() => setIsFilterModalOpen(false)}
-        filters={filters}
-        onApply={updateFilters}
-      />
     </div>
   );
 }
 
 interface CharacterListPanelProps {
-  starredCharacters: CharacterBasic[];
-  regularCharacters: CharacterBasic[];
-  totalResults: number;
-  activeFiltersCount: number;
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  onFilterClick: () => void;
-  selectedCharacterId: string | null;
-  onCharacterSelect: (character: CharacterBasic) => void;
+  readonly starredCharacters: CharacterBasic[];
+  readonly regularCharacters: CharacterBasic[];
+  readonly totalResults: number;
+  readonly activeFiltersCount: number;
+  readonly searchValue: string;
+  readonly onSearchChange: (value: string) => void;
+  readonly onFilterClick: () => void;
+  readonly isFilterOpen: boolean;
+  readonly onFilterClose: () => void;
+  readonly filters: CharacterFiltersState;
+  readonly onFilterApply: (filters: Partial<CharacterFiltersState>) => void;
+  readonly selectedCharacterId: string | null;
+  readonly onCharacterSelect: (character: CharacterBasic) => void;
 }
 
 function CharacterListPanel({
@@ -187,6 +200,10 @@ function CharacterListPanel({
   searchValue,
   onSearchChange,
   onFilterClick,
+  isFilterOpen,
+  onFilterClose,
+  filters,
+  onFilterApply,
   selectedCharacterId,
   onCharacterSelect,
 }: CharacterListPanelProps) {
@@ -195,21 +212,30 @@ function CharacterListPanel({
       {/* Header */}
       <div className="p-4 border-b border-gray-100">
         <h1 className="text-xl font-bold text-gray-800 mb-4">Rick and Morty list</h1>
-        <SearchBar
-          value={searchValue}
-          onChange={onSearchChange}
-          onFilterClick={onFilterClick}
-          activeFiltersCount={activeFiltersCount}
-        />
+        <div className="relative w-full max-w-[343px]">
+          <SearchBar
+            value={searchValue}
+            onChange={onSearchChange}
+            onFilterClick={onFilterClick}
+            activeFiltersCount={activeFiltersCount}
+            isFilterOpen={isFilterOpen}
+          />
+          <FilterDropdown
+            isOpen={isFilterOpen}
+            onClose={onFilterClose}
+            filters={filters}
+            onApply={onFilterApply}
+          />
+        </div>
       </div>
 
       {/* Results count and filter badge */}
-      <div className="px-4 py-2 flex items-center gap-2">
-        <span className="text-sm text-primary-600 font-medium">
+      <div className="px-4 py-2 flex items-center justify-between">
+        <span className="text-sm text-[#2563EB] font-medium">
           {totalResults} Results
         </span>
         {activeFiltersCount > 0 && (
-          <span className="px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-600 rounded-full">
+          <span className="px-3 py-1 text-xs font-medium bg-[#63D83833] text-[#3B8520] rounded-full">
             {activeFiltersCount} Filter{activeFiltersCount > 1 ? 's' : ''}
           </span>
         )}
@@ -319,14 +345,18 @@ function CharacterDetailPanel({ character }: CharacterDetailPanelProps) {
 }
 
 interface MobileCharacterListProps {
-  starredCharacters: CharacterBasic[];
-  regularCharacters: CharacterBasic[];
-  totalResults: number;
-  activeFiltersCount: number;
-  searchValue: string;
-  onSearchChange: (value: string) => void;
-  onFilterClick: () => void;
-  onCharacterClick: (character: CharacterBasic) => void;
+  readonly starredCharacters: CharacterBasic[];
+  readonly regularCharacters: CharacterBasic[];
+  readonly totalResults: number;
+  readonly activeFiltersCount: number;
+  readonly searchValue: string;
+  readonly onSearchChange: (value: string) => void;
+  readonly onFilterClick: () => void;
+  readonly isFilterOpen: boolean;
+  readonly onFilterClose: () => void;
+  readonly filters: CharacterFiltersState;
+  readonly onFilterApply: (filters: Partial<CharacterFiltersState>) => void;
+  readonly onCharacterClick: (character: CharacterBasic) => void;
 }
 
 function MobileCharacterList({
@@ -337,6 +367,10 @@ function MobileCharacterList({
   searchValue,
   onSearchChange,
   onFilterClick,
+  isFilterOpen,
+  onFilterClose,
+  filters,
+  onFilterApply,
   onCharacterClick,
 }: MobileCharacterListProps) {
   return (
@@ -344,12 +378,21 @@ function MobileCharacterList({
       {/* Header */}
       <div className="p-4">
         <h1 className="text-xl font-bold text-gray-800 mb-4">Rick and Morty list</h1>
-        <SearchBar
-          value={searchValue}
-          onChange={onSearchChange}
-          onFilterClick={onFilterClick}
-          activeFiltersCount={activeFiltersCount}
-        />
+        <div className="relative w-full max-w-[343px]">
+          <SearchBar
+            value={searchValue}
+            onChange={onSearchChange}
+            onFilterClick={onFilterClick}
+            activeFiltersCount={activeFiltersCount}
+            isFilterOpen={isFilterOpen}
+          />
+          <FilterDropdown
+            isOpen={isFilterOpen}
+            onClose={onFilterClose}
+            filters={filters}
+            onApply={onFilterApply}
+          />
+        </div>
       </div>
 
       {/* Character lists */}

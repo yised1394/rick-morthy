@@ -7,6 +7,7 @@ interface SearchBarProps {
   readonly onFilterClick: () => void;
   readonly placeholder?: string;
   readonly activeFiltersCount?: number;
+  readonly isFilterOpen?: boolean;
 }
 
 /**
@@ -19,9 +20,14 @@ export function SearchBar({
   onFilterClick,
   placeholder = 'Search or filter results',
   activeFiltersCount = 0,
+  isFilterOpen = false,
 }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(value);
+  const [isFilterHovered, setIsFilterHovered] = useState(false);
   const debouncedValue = useDebounce(inputValue, 300);
+
+  // Icon state: active (panel open) > hover > idle
+  const showPillBackground = isFilterOpen || isFilterHovered;
 
   useEffect(() => {
     if (debouncedValue !== value) {
@@ -70,8 +76,15 @@ export function SearchBar({
       <button
         type="button"
         onClick={onFilterClick}
-        className="absolute right-3 p-1 text-gray-400 hover:text-primary-600 transition-colors relative"
+        onMouseEnter={() => setIsFilterHovered(true)}
+        onMouseLeave={() => setIsFilterHovered(false)}
+        className={`
+          absolute right-2 p-2 rounded-lg transition-all duration-150
+          text-primary-600 cursor-pointer
+          ${showPillBackground ? 'bg-primary-100' : 'bg-transparent'}
+        `}
         aria-label="Open filters"
+        aria-expanded={isFilterOpen}
       >
         <svg
           className="h-5 w-5"
