@@ -10,12 +10,13 @@ import { useView } from '../context';
 import { CharacterListItem } from './character-list-item';
 import { CharacterDetail } from './character-detail';
 import { SearchBar } from './search-bar';
-import { FilterModal } from './filter-modal';
+import { FilterDropdown } from './filter-dropdown';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { EmptyState } from '@/shared/components/ui/empty-state';
 import { sortCharactersByName, filterDeletedCharacters } from '../utils/character.utils';
 import { getCharacterDetailRoute } from '@/core/config/routes.config';
+import type { CharacterFiltersState } from '../hooks/use-character-filters';
 import type { CharacterFilter, CharacterBasic } from '../types/character.types';
 import type { CharacterId } from '@/core/types/global.types';
 
@@ -51,11 +52,7 @@ export function CharacterExplorer() {
   const { isFavorite, favorites } = useFavorites();
   const { deletedCharacterIds, restoreCharacter, deletedCount } = useSoftDeleteCharacters();
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
-  const [isFilterModalOpen, setIsFilterModalOpen] = useState(false);
-  
-  // State for deleted characters data
-  const [deletedCharacters, setDeletedCharacters] = useState<DeletedCharacter[]>([]);
-  const [isLoadingDeleted, setIsLoadingDeleted] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // API filter for main characters
   const apiFilter: CharacterFilter = {
@@ -129,20 +126,27 @@ export function CharacterExplorer() {
       return { starredCharacters: [], regularCharacters: [], totalResults: 0 };
     }
 
-    const filtered = filterDeletedCharacters(data.characters.results, deletedCharacterIds as ReadonlySet<string>);
-    let characters = filters.sortBy
+    const filtered = filterDeletedCharacters(data.characters.results, deletedIds);
+    const characters = filters.sortBy
       ? sortCharactersByName(filtered, filters.sortBy)
       : filtered;
 
     const starred = characters.filter((c) => isFavorite(c.id));
     const regular = characters.filter((c) => !isFavorite(c.id));
 
+    // Apply characterType filter
+    const showStarred = filters.characterType !== 'others';
+    const showRegular = filters.characterType !== 'starred';
+
+    const visibleStarred = showStarred ? starred : [];
+    const visibleRegular = showRegular ? regular : [];
+
     return {
-      starredCharacters: starred,
-      regularCharacters: regular,
-      totalResults: characters.length,
+      starredCharacters: visibleStarred,
+      regularCharacters: visibleRegular,
+      totalResults: visibleStarred.length + visibleRegular.length,
     };
-  }, [data?.characters.results, deletedCharacterIds, filters.sortBy, isFavorite]);
+  }, [data?.characters.results, deletedIds, filters.sortBy, filters.characterType, isFavorite]);
 
   // Favorites list
   const favoriteCharacters = useMemo(() => {
@@ -155,8 +159,9 @@ export function CharacterExplorer() {
     if (filters.status) count++;
     if (filters.species) count++;
     if (filters.gender) count++;
+    if (filters.characterType && filters.characterType !== 'all') count++;
     return count;
-  }, [filters]);
+  }, [filters.status, filters.species, filters.gender, filters.characterType]);
 
   const handleCharacterSelect = useCallback((character: CharacterBasic | DeletedCharacter) => {
     setSelectedCharacterId(character.id);
@@ -218,206 +223,23 @@ export function CharacterExplorer() {
     <div className="h-full">
       {/* Desktop Layout */}
       <div className="hidden lg:flex h-[calc(100vh-200px)] gap-0">
-        {/* Left Panel - View-specific content */}
-        <div className="w-96 flex-shrink-0 border-r border-gray-100 flex flex-col" style={{ viewTransitionName: 'left-panel' }}>
-          {/* Header */}
-          <div className="p-4 border-b border-gray-100">
-            {view !== 'all' ? (
-              <div className="flex items-center gap-2 mb-4">
-                <button
-                  type="button"
-                  onClick={() => setView('all')}
-                  className="p-1 -ml-1 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
-                  aria-label="Back to character list"
-                >
-                  <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                  </svg>
-                </button>
-                <h1 className="text-xl font-bold text-gray-800">{getViewTitle()}</h1>
-              </div>
-            ) : (
-              <h1 className="text-xl font-bold text-gray-800 mb-4">{getViewTitle()}</h1>
-            )}
-            {view === 'all' && (
-              <SearchBar
-                value={filters.name}
-                onChange={handleSearchChange}
-                onFilterClick={() => setIsFilterModalOpen(true)}
-                activeFiltersCount={activeFiltersCount}
-              />
-            )}
-            {view === 'favorites' && (
-              <p className="text-sm text-gray-500">
-                {favoriteIds.length} saved {favoriteIds.length === 1 ? 'character' : 'characters'}
-              </p>
-            )}
-            {view === 'deleted' && (
-              <div className="flex items-center justify-between">
-                <p className="text-sm text-gray-500">
-                  {deletedCount} {deletedCount === 1 ? 'character' : 'characters'}
-                </p>
-                {deletedCharacters.length > 1 && (
-                  <button
-                    type="button"
-                    onClick={handleRestoreAll}
-                    className="text-xs font-medium text-primary-600 hover:text-primary-700 transition-colors"
-                  >
-                    Restore All
-                  </button>
-                )}
-              </div>
-            )}
-          </div>
-
-          {/* Content based on view */}
-          <div className="flex-1 overflow-y-auto">
-            {/* All Characters View */}
-            {view === 'all' && (
-              <>
-                {/* Results count */}
-                <div className="px-4 py-2 flex items-center gap-2">
-                  <span className="text-sm text-primary-600 font-medium">
-                    {totalResults} Results
-                  </span>
-                  {activeFiltersCount > 0 && (
-                    <span className="px-2 py-0.5 text-xs font-medium bg-primary-100 text-primary-600 rounded-full">
-                      {activeFiltersCount} Filter{activeFiltersCount > 1 ? 's' : ''}
-                    </span>
-                  )}
-                </div>
-
-                {totalResults === 0 ? (
-                  <EmptyState
-                    title="No characters found"
-                    description="Try adjusting your filters"
-                  />
-                ) : (
-                  <>
-                    {starredCharacters.length > 0 && (
-                      <div className="py-2">
-                        <h2 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                          Starred Characters ({starredCharacters.length})
-                        </h2>
-                        {starredCharacters.map((character) => (
-                          <CharacterListItem
-                            key={character.id}
-                            character={character}
-                            isSelected={selectedCharacterId === character.id}
-                            onClick={() => handleCharacterSelect(character)}
-                          />
-                        ))}
-                      </div>
-                    )}
-                    {regularCharacters.length > 0 && (
-                      <div className="py-2">
-                        <h2 className="px-4 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wider">
-                          Characters ({regularCharacters.length})
-                        </h2>
-                        {regularCharacters.map((character) => (
-                          <CharacterListItem
-                            key={character.id}
-                            character={character}
-                            isSelected={selectedCharacterId === character.id}
-                            onClick={() => handleCharacterSelect(character)}
-                          />
-                        ))}
-                      </div>
-                    )}
-                  </>
-                )}
-              </>
-            )}
-
-            {/* Favorites View */}
-            {view === 'favorites' && (
-              <>
-                {loadingFavorites ? (
-                  <div className="flex justify-center py-12">
-                    <LoadingSpinner />
-                  </div>
-                ) : favoriteCharacters.length === 0 ? (
-                  <EmptyState
-                    title="No favorites yet"
-                    description="Start exploring characters and add some to your favorites!"
-                  />
-                ) : (
-                  <div className="py-2">
-                    {favoriteCharacters.map((character) => (
-                      <CharacterListItem
-                        key={character.id}
-                        character={character}
-                        isSelected={selectedCharacterId === character.id}
-                        onClick={() => handleCharacterSelect(character)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-
-            {/* Deleted View */}
-            {view === 'deleted' && (
-              <>
-                {isLoadingDeleted ? (
-                  <div className="flex justify-center py-12">
-                    <LoadingSpinner />
-                  </div>
-                ) : deletedCharacters.length === 0 ? (
-                  <EmptyState
-                    title="No deleted characters"
-                    description="Characters you delete will appear here."
-                  />
-                ) : (
-                  <div className="py-2">
-                    {deletedCharacters.map((character) => (
-                      <div
-                        key={character.id}
-                        className={`
-                          flex items-center gap-3 px-4 py-3 cursor-pointer transition-all
-                          border-l-4 rounded-r-lg
-                          ${selectedCharacterId === character.id
-                            ? 'bg-red-50 border-l-red-500'
-                            : 'border-transparent hover:bg-gray-50'
-                          }
-                        `}
-                        onClick={() => handleCharacterSelect(character)}
-                        role="button"
-                        tabIndex={0}
-                      >
-                        <img
-                          src={character.image}
-                          alt={character.name}
-                          className="w-10 h-10 rounded-full object-cover opacity-60"
-                        />
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-sm font-medium text-gray-600 truncate">
-                            {character.name}
-                          </h3>
-                          <p className="text-xs text-gray-400 truncate">
-                            {character.species}
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handleRestoreSingle(character);
-                          }}
-                          className="flex-shrink-0 p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
-                          aria-label={`Restore ${character.name}`}
-                        >
-                          <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-                          </svg>
-                        </button>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-          </div>
+        {/* Left Panel - Character List */}
+        <div className="w-96 flex-shrink-0 border-r border-gray-100 flex flex-col">
+          <CharacterListPanel
+            starredCharacters={starredCharacters}
+            regularCharacters={regularCharacters}
+            totalResults={totalResults}
+            activeFiltersCount={activeFiltersCount}
+            searchValue={filters.name}
+            onSearchChange={handleSearchChange}
+            onFilterClick={() => setIsFilterOpen((prev) => !prev)}
+            isFilterOpen={isFilterOpen}
+            onFilterClose={() => setIsFilterOpen(false)}
+            filters={filters}
+            onFilterApply={updateFilters}
+            selectedCharacterId={selectedCharacterId}
+            onCharacterSelect={handleCharacterSelect}
+          />
         </div>
 
         {/* Right Panel - Character Detail */}
@@ -440,17 +262,89 @@ export function CharacterExplorer() {
 
       {/* Mobile Layout */}
       <div className="lg:hidden">
-        <div className="p-4">
-          <h1 className="text-xl font-bold text-gray-800 mb-4">{getViewTitle()}</h1>
-          {view === 'all' && (
-            <SearchBar
-              value={filters.name}
-              onChange={handleSearchChange}
-              onFilterClick={() => setIsFilterModalOpen(true)}
-              activeFiltersCount={activeFiltersCount}
-            />
-          )}
+        <MobileCharacterList
+          starredCharacters={starredCharacters}
+          regularCharacters={regularCharacters}
+          totalResults={totalResults}
+          activeFiltersCount={activeFiltersCount}
+          searchValue={filters.name}
+          onSearchChange={handleSearchChange}
+          onFilterClick={() => setIsFilterOpen((prev) => !prev)}
+          isFilterOpen={isFilterOpen}
+          onFilterClose={() => setIsFilterOpen(false)}
+          filters={filters}
+          onFilterApply={updateFilters}
+          onCharacterClick={handleMobileCharacterClick}
+        />
+      </div>
+    </div>
+  );
+}
+
+interface CharacterListPanelProps {
+  readonly starredCharacters: CharacterBasic[];
+  readonly regularCharacters: CharacterBasic[];
+  readonly totalResults: number;
+  readonly activeFiltersCount: number;
+  readonly searchValue: string;
+  readonly onSearchChange: (value: string) => void;
+  readonly onFilterClick: () => void;
+  readonly isFilterOpen: boolean;
+  readonly onFilterClose: () => void;
+  readonly filters: CharacterFiltersState;
+  readonly onFilterApply: (filters: Partial<CharacterFiltersState>) => void;
+  readonly selectedCharacterId: string | null;
+  readonly onCharacterSelect: (character: CharacterBasic) => void;
+}
+
+function CharacterListPanel({
+  starredCharacters,
+  regularCharacters,
+  totalResults,
+  activeFiltersCount,
+  searchValue,
+  onSearchChange,
+  onFilterClick,
+  isFilterOpen,
+  onFilterClose,
+  filters,
+  onFilterApply,
+  selectedCharacterId,
+  onCharacterSelect,
+}: CharacterListPanelProps) {
+  return (
+    <>
+      {/* Header */}
+      <div className="p-4 border-b border-gray-100">
+        <h1 className="text-xl font-bold text-gray-800 mb-4">Rick and Morty list</h1>
+        <div className="relative w-full max-w-[343px]">
+          <SearchBar
+            value={searchValue}
+            onChange={onSearchChange}
+            onFilterClick={onFilterClick}
+            activeFiltersCount={activeFiltersCount}
+            isFilterOpen={isFilterOpen}
+          />
+          <FilterDropdown
+            isOpen={isFilterOpen}
+            onClose={onFilterClose}
+            filters={filters}
+            onApply={onFilterApply}
+          />
         </div>
+      </div>
+
+      {/* Results count and filter badge */}
+      <div className="px-4 py-2 flex items-center justify-between">
+        <span className="text-sm text-[#2563EB] font-medium">
+          {totalResults} Results
+        </span>
+        {activeFiltersCount > 0 && (
+          <span className="px-3 py-1 text-xs font-medium bg-[#63D83833] text-[#3B8520] rounded-full">
+            {activeFiltersCount} Filter{activeFiltersCount > 1 ? 's' : ''}
+          </span>
+        )}
+      </div>
 
         {/* Mobile content based on view */}
         {view === 'all' && (
@@ -492,7 +386,108 @@ export function CharacterExplorer() {
           </>
         )}
 
-        {view === 'favorites' && (
+function CharacterDetailPanel({ character }: CharacterDetailPanelProps) {
+  return (
+    <div>
+      {/* Avatar with favorite indicator */}
+      <div className="relative inline-block mb-4">
+        <img
+          src={character.image}
+          alt={character.name}
+          className="w-20 h-20 rounded-full object-cover"
+        />
+        <div className="absolute -bottom-1 -right-1">
+          <FavoriteButton
+            characterId={character.id}
+            size="sm"
+            variant="minimal"
+          />
+        </div>
+      </div>
+
+      {/* Name */}
+      <h2 className="text-xl font-bold text-gray-800 mb-6">
+        {character.name}
+      </h2>
+
+      {/* Info sections */}
+      <div className="space-y-4">
+        <div className="border-b border-gray-100 pb-4">
+          <dt className="text-sm font-semibold text-gray-800 mb-1">Specie</dt>
+          <dd className="text-sm text-gray-500">{character.species}</dd>
+        </div>
+        <div className="border-b border-gray-100 pb-4">
+          <dt className="text-sm font-semibold text-gray-800 mb-1">Status</dt>
+          <dd className="text-sm text-gray-500">{character.status}</dd>
+        </div>
+        <div className="border-b border-gray-100 pb-4">
+          <dt className="text-sm font-semibold text-gray-800 mb-1">Occupation</dt>
+          <dd className="text-sm text-gray-500">{character.type || 'Princess'}</dd>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+interface MobileCharacterListProps {
+  readonly starredCharacters: CharacterBasic[];
+  readonly regularCharacters: CharacterBasic[];
+  readonly totalResults: number;
+  readonly activeFiltersCount: number;
+  readonly searchValue: string;
+  readonly onSearchChange: (value: string) => void;
+  readonly onFilterClick: () => void;
+  readonly isFilterOpen: boolean;
+  readonly onFilterClose: () => void;
+  readonly filters: CharacterFiltersState;
+  readonly onFilterApply: (filters: Partial<CharacterFiltersState>) => void;
+  readonly onCharacterClick: (character: CharacterBasic) => void;
+}
+
+function MobileCharacterList({
+  starredCharacters,
+  regularCharacters,
+  totalResults,
+  activeFiltersCount,
+  searchValue,
+  onSearchChange,
+  onFilterClick,
+  isFilterOpen,
+  onFilterClose,
+  filters,
+  onFilterApply,
+  onCharacterClick,
+}: MobileCharacterListProps) {
+  return (
+    <div>
+      {/* Header */}
+      <div className="p-4">
+        <h1 className="text-xl font-bold text-gray-800 mb-4">Rick and Morty list</h1>
+        <div className="relative w-full max-w-[343px]">
+          <SearchBar
+            value={searchValue}
+            onChange={onSearchChange}
+            onFilterClick={onFilterClick}
+            activeFiltersCount={activeFiltersCount}
+            isFilterOpen={isFilterOpen}
+          />
+          <FilterDropdown
+            isOpen={isFilterOpen}
+            onClose={onFilterClose}
+            filters={filters}
+            onApply={onFilterApply}
+          />
+        </div>
+      </div>
+
+      {/* Character lists */}
+      <div>
+        {totalResults === 0 ? (
+          <EmptyState
+            title="No characters found"
+            description="Try adjusting your filters"
+          />
+        ) : (
           <>
             {loadingFavorites ? (
               <div className="flex justify-center py-12"><LoadingSpinner /></div>
