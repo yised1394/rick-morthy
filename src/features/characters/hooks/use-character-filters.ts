@@ -3,6 +3,8 @@ import { useCallback } from 'react';
 import type { CharacterStatus, CharacterGender } from '../types/character.types';
 import type { SortOption } from '@/shared/constants/app.constants';
 
+export type CharacterTypeFilter = 'all' | 'starred' | 'others';
+
 export interface CharacterFiltersState {
   readonly page: number;
   readonly name: string;
@@ -10,6 +12,7 @@ export interface CharacterFiltersState {
   readonly species: string;
   readonly gender: CharacterGender | '';
   readonly sortBy: SortOption | '';
+  readonly characterType: CharacterTypeFilter;
 }
 
 /**
@@ -28,6 +31,7 @@ export function useCharacterFilters() {
     species: searchParams.get('species') ?? '',
     gender: (searchParams.get('gender') as CharacterGender) ?? '',
     sortBy: (searchParams.get('sortBy') as SortOption) ?? '',
+    characterType: (searchParams.get('characterType') as CharacterTypeFilter) || 'all',
   };
 
   const updateFilters = useCallback(

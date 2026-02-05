@@ -7,7 +7,10 @@
       "Bash(npm install:*)",
       "Bash(timeout:*)",
       "Bash(ping:*)",
-      "Bash(start npm run dev)"
+      "Bash(start npm run dev)",
+      "Bash(tree:*)",
+      "Bash(npx vite build)",
+      "Bash(npx vite:*)"
     ]
   }
 }
