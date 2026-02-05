@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom';
 
 // Mock IntersectionObserver
-global.IntersectionObserver = class IntersectionObserver {
+(globalThis as typeof globalThis & { IntersectionObserver: typeof IntersectionObserver }).IntersectionObserver = class IntersectionObserver {
   readonly root: Element | null = null;
   readonly rootMargin: string = '';
   readonly thresholds: ReadonlyArray<number> = [];

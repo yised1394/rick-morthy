@@ -1,21 +1,34 @@
 import { useParams, useNavigate } from 'react-router-dom';
 import { useCharacterById } from '../hooks/use-character-by-id';
-import { Badge, getStatusVariant } from '@/shared/components/ui/badge';
-import { Button } from '@/shared/components/ui/button';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { FavoriteButton } from '@/features/favorites/components/favorite-button';
 import { CommentSection } from '@/features/comments/components/comment-section';
-import { formatCharacterDate, getStatusColorClass } from '../utils/character.utils';
 import { ROUTES } from '@/core/config/routes.config';
+import type { Character } from '../types/character.types';
+
+interface CharacterDetailProps {
+  readonly characterId?: string;
+  readonly onBack?: () => void;
+}
 
 /**
- * Character detail view with full information and comments.
+ * Character detail view with full information (Figma design).
+ * Can be used standalone or embedded in a split layout.
  */
-export function CharacterDetail() {
-  const { id } = useParams<{ id: string }>();
+export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
+  const { id: routeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { data, loading, error, refetch } = useCharacterById(id ?? '');
+  const id = characterId ?? routeId ?? '';
+  const { data, loading, error, refetch } = useCharacterById(id);
+
+  const handleBack = () => {
+    if (onBack) {
+      onBack();
+    } else {
+      navigate(-1);
+    }
+  };
 
   if (loading) {
     return (
@@ -48,120 +61,117 @@ export function CharacterDetail() {
   const character = data.character;
 
   return (
-    <div className="space-y-8">
-      <Button
-        variant="ghost"
-        onClick={() => navigate(-1)}
-        className="mb-4"
+    <div className="h-full">
+      {/* Back button */}
+      <button
+        type="button"
+        onClick={handleBack}
+        className="text-primary-600 hover:text-primary-700 transition-colors mb-6"
+        aria-label="Go back"
       >
         <svg
-          className="mr-2 h-4 w-4"
+          className="h-5 w-5"
           fill="none"
           viewBox="0 0 24 24"
           stroke="currentColor"
-          aria-hidden="true"
         >
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
             strokeWidth={2}
-            d="M10 19l-7-7m0 0l7-7m-7 7h18"
+            d="M15 19l-7-7 7-7"
           />
         </svg>
-        Back
-      </Button>
+      </button>
 
-      <div className="grid gap-8 lg:grid-cols-3">
-        <div className="lg:col-span-1">
-          <div className="relative overflow-hidden rounded-xl">
-            <img
-              src={character.image}
-              alt={character.name}
-              className="h-full w-full object-cover"
+      {/* Character info */}
+      <div className="space-y-6">
+        {/* Avatar with favorite indicator */}
+        <div className="relative inline-block">
+          <img
+            src={character.image}
+            alt={character.name}
+            className="w-20 h-20 rounded-full object-cover"
+          />
+          <div className="absolute -bottom-1 -right-1">
+            <FavoriteButton
+              characterId={character.id}
+              size="sm"
+              variant="minimal"
             />
-            <div className="absolute right-4 top-4">
-              <FavoriteButton characterId={character.id} size="lg" />
-            </div>
           </div>
         </div>
 
-        <div className="lg:col-span-2 space-y-6">
-          <div>
-            <div className="flex items-center gap-3 mb-2">
-              <span
-                className={`h-3 w-3 rounded-full ${getStatusColorClass(character.status)}`}
-                aria-hidden="true"
-              />
-              <Badge variant={getStatusVariant(character.status)}>
-                {character.status}
-              </Badge>
-            </div>
+        {/* Name */}
+        <h1 className="text-2xl font-bold text-gray-800">
+          {character.name}
+        </h1>
 
-            <h1 className="text-3xl font-bold text-foreground">
-              {character.name}
-            </h1>
-
-            {character.type && (
-              <p className="mt-1 text-neutral-600">{character.type}</p>
-            )}
-          </div>
-
-          <div className="grid gap-4 sm:grid-cols-2">
-            <InfoItem label="Species" value={character.species} />
-            <InfoItem label="Gender" value={character.gender} />
-            <InfoItem label="Origin" value={character.origin.name} />
-            <InfoItem label="Location" value={character.location.name} />
-            <InfoItem
-              label="Created"
-              value={formatCharacterDate(character.created)}
-            />
-            <InfoItem
-              label="Episodes"
-              value={`${character.episode.length} episode${character.episode.length !== 1 ? 's' : ''}`}
-            />
-          </div>
-
-          {character.episode.length > 0 && (
-            <div>
-              <h2 className="mb-3 text-lg font-semibold text-foreground">
-                Episodes
-              </h2>
-              <div className="flex flex-wrap gap-2">
-                {character.episode.slice(0, 10).map((ep) => (
-                  <span
-                    key={ep.id}
-                    className="rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground"
-                    title={ep.name}
-                  >
-                    {ep.episode}
-                  </span>
-                ))}
-                {character.episode.length > 10 && (
-                  <span className="rounded-full bg-muted px-3 py-1 text-sm text-muted-foreground">
-                    +{character.episode.length - 10} more
-                  </span>
-                )}
-              </div>
-            </div>
-          )}
+        {/* Info sections */}
+        <div className="space-y-4">
+          <CharacterInfoRow label="Specie" value={character.species} />
+          <CharacterInfoRow label="Status" value={character.status} />
+          <CharacterInfoRow label="Occupation" value={character.type || 'Unknown'} />
         </div>
       </div>
 
-      <CommentSection characterId={character.id} />
+      {/* Comments section - only show on standalone page */}
+      {!characterId && (
+        <div className="mt-8">
+          <CommentSection characterId={character.id} />
+        </div>
+      )}
     </div>
   );
 }
 
-interface InfoItemProps {
+interface CharacterInfoRowProps {
   readonly label: string;
   readonly value: string;
 }
 
-function InfoItem({ label, value }: InfoItemProps) {
+function CharacterInfoRow({ label, value }: CharacterInfoRowProps) {
   return (
-    <div>
-      <dt className="text-sm font-medium text-neutral-500">{label}</dt>
-      <dd className="mt-1 text-foreground">{value}</dd>
+    <div className="border-b border-gray-100 pb-4">
+      <dt className="text-sm font-semibold text-gray-800 mb-1">{label}</dt>
+      <dd className="text-sm text-gray-500">{value}</dd>
+    </div>
+  );
+}
+
+/**
+ * Compact version of character detail for use in split layouts.
+ */
+export function CharacterDetailCompact({ character }: { readonly character: Character }) {
+  return (
+    <div className="p-6">
+      {/* Avatar with favorite indicator */}
+      <div className="relative inline-block mb-4">
+        <img
+          src={character.image}
+          alt={character.name}
+          className="w-20 h-20 rounded-full object-cover"
+        />
+        <div className="absolute -bottom-1 -right-1">
+          <FavoriteButton
+            characterId={character.id}
+            size="sm"
+            variant="minimal"
+          />
+        </div>
+      </div>
+
+      {/* Name */}
+      <h2 className="text-xl font-bold text-gray-800 mb-6">
+        {character.name}
+      </h2>
+
+      {/* Info sections */}
+      <div className="space-y-4">
+        <CharacterInfoRow label="Specie" value={character.species} />
+        <CharacterInfoRow label="Status" value={character.status} />
+        <CharacterInfoRow label="Occupation" value={character.type || 'Unknown'} />
+      </div>
     </div>
   );
 }
