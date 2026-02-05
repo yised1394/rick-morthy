@@ -1,9 +1,13 @@
+import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/shared/components/ui/button';
+import { ConfirmationModal } from '@/shared/components/ui/confirmation-modal';
 import type { Comment } from '../types/comment.types';
 
 interface CommentItemProps {
   readonly comment: Comment;
   readonly onDelete: (id: Comment['id']) => void;
+  readonly onEdit: (id: Comment['id'], newText: string) => void;
 }
 
 /**
@@ -41,51 +45,150 @@ function formatCommentDate(dateString: string): string {
 }
 
 /**
- * Single comment display component.
+ * Single comment display component with edit and delete functionality.
  */
-export function CommentItem({ comment, onDelete }: CommentItemProps) {
+export function CommentItem({ comment, onDelete, onEdit }: CommentItemProps) {
+  const [isEditing, setIsEditing] = useState(false);
+  const [editText, setEditText] = useState(comment.text);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const handleEdit = () => {
+    setEditText(comment.text);
+    setIsEditing(true);
+  };
+
+  const handleSaveEdit = () => {
+    if (editText.trim().length < 3) {
+      toast.error('Comment must be at least 3 characters');
+      return;
+    }
+    if (editText.trim().length > 500) {
+      toast.error('Comment must be less than 500 characters');
+      return;
+    }
+    onEdit(comment.id, editText.trim());
+    setIsEditing(false);
+    toast.success('Comment updated');
+  };
+
+  const handleCancelEdit = () => {
+    setEditText(comment.text);
+    setIsEditing(false);
+  };
+
+  const handleDelete = () => {
+    setShowDeleteConfirm(true);
+  };
+
+  const confirmDelete = () => {
+    onDelete(comment.id);
+    toast.success('Comment deleted');
+  };
+
   return (
-    <article className="rounded-md bg-muted p-4">
-      <div className="flex items-start justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand font-semibold">
-            {comment.author.charAt(0).toUpperCase()}
+    <>
+      <article className="rounded-md bg-muted p-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-brand/10 text-brand font-semibold">
+              {comment.author.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <p className="font-medium text-foreground">{comment.author}</p>
+              <p className="text-xs text-neutral-500">
+                {formatCommentDate(comment.createdAt)}
+              </p>
+            </div>
           </div>
-          <div>
-            <p className="font-medium text-foreground">{comment.author}</p>
-            <p className="text-xs text-neutral-500">
-              {formatCommentDate(comment.createdAt)}
-            </p>
-          </div>
+
+          {/* Action buttons */}
+          {!isEditing && (
+            <div className="flex gap-1">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleEdit}
+                aria-label="Edit comment"
+                className="text-neutral-400 hover:text-primary-600"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                  />
+                </svg>
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleDelete}
+                aria-label="Delete comment"
+                className="text-neutral-400 hover:text-danger"
+              >
+                <svg
+                  className="h-4 w-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                  />
+                </svg>
+              </Button>
+            </div>
+          )}
         </div>
 
-        <Button
-          variant="ghost"
-          size="sm"
-          onClick={() => onDelete(comment.id)}
-          aria-label="Delete comment"
-          className="text-neutral-400 hover:text-danger"
-        >
-          <svg
-            className="h-4 w-4"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-            aria-hidden="true"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+        {/* Comment text or edit form */}
+        {isEditing ? (
+          <div className="mt-3 space-y-3">
+            <textarea
+              value={editText}
+              onChange={(e) => setEditText(e.target.value)}
+              maxLength={500}
+              rows={3}
+              className="input resize-none w-full"
+              autoFocus
             />
-          </svg>
-        </Button>
-      </div>
+            <div className="flex gap-2">
+              <Button size="sm" onClick={handleSaveEdit}>
+                Save
+              </Button>
+              <Button variant="secondary" size="sm" onClick={handleCancelEdit}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          <p className="mt-3 text-sm text-foreground whitespace-pre-wrap">
+            {comment.text}
+          </p>
+        )}
+      </article>
 
-      <p className="mt-3 text-sm text-foreground whitespace-pre-wrap">
-        {comment.text}
-      </p>
-    </article>
+      <ConfirmationModal
+        isOpen={showDeleteConfirm}
+        onClose={() => setShowDeleteConfirm(false)}
+        onConfirm={confirmDelete}
+        title="Delete Comment"
+        message={`Are you sure you want to delete this comment by ${comment.author}?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        variant="danger"
+      />
+    </>
   );
 }

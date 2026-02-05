@@ -1,7 +1,10 @@
 import type { ReactNode } from 'react';
 import { ApolloProvider } from '@apollo/client';
+import { Toaster } from 'sonner';
 import { apolloClient } from '../config/apollo.config';
 import { FavoritesProvider } from '@/features/favorites/context/favorites-context';
+import { SoftDeleteProvider } from '@/features/soft-delete';
+import { ViewProvider } from '@/features/characters/context';
 
 interface AppProvidersProps {
   readonly children: ReactNode;
@@ -14,9 +17,20 @@ interface AppProvidersProps {
 export function AppProviders({ children }: AppProvidersProps) {
   return (
     <ApolloProvider client={apolloClient}>
-      <FavoritesProvider>
-        {children}
-      </FavoritesProvider>
+      <SoftDeleteProvider>
+        <FavoritesProvider>
+          <ViewProvider>
+            {children}
+            <Toaster
+              position="top-right"
+              richColors
+              closeButton
+              duration={3000}
+            />
+          </ViewProvider>
+        </FavoritesProvider>
+      </SoftDeleteProvider>
     </ApolloProvider>
   );
 }
+

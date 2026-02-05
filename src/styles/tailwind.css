@@ -162,3 +162,44 @@
     @apply text-primary-600 hover:text-primary-700 transition-colors;
   }
 }
+
+/* View Transitions for smooth SPA navigation */
+@layer utilities {
+  /* Enable view transitions */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.25s;
+  }
+
+  /* Fade and slide animation */
+  ::view-transition-old(root) {
+    animation: fade-out 0.15s ease-out both;
+  }
+
+  ::view-transition-new(root) {
+    animation: fade-in 0.15s ease-in 0.1s both;
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Smooth content transitions */
+  .view-transition-fade {
+    view-transition-name: main-content;
+  }
+}

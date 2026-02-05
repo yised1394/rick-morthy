@@ -5,7 +5,6 @@ import type { CharacterId } from '@/core/types/global.types';
  */
 export interface FavoritesState {
   readonly favorites: Set<CharacterId>;
-  readonly deletedIds: Set<CharacterId>;
 }
 
 /**
@@ -14,9 +13,6 @@ export interface FavoritesState {
 export interface FavoritesActions {
   readonly toggleFavorite: (id: CharacterId) => void;
   readonly isFavorite: (id: CharacterId) => boolean;
-  readonly softDelete: (id: CharacterId) => void;
-  readonly restoreCharacter: (id: CharacterId) => void;
-  readonly isDeleted: (id: CharacterId) => boolean;
 }
 
 /**
@@ -25,3 +21,4 @@ export interface FavoritesActions {
 export interface FavoritesContextValue extends FavoritesState, FavoritesActions {
   readonly count: number;
 }
+

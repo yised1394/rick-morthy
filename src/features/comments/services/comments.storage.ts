@@ -74,6 +74,43 @@ export function deleteComment(characterId: CharacterId, commentId: CommentId): v
 }
 
 /**
+ * Update an existing comment.
+ *
+ * @param characterId - Character ID the comment belongs to
+ * @param commentId - Comment ID to update
+ * @param newText - New text content for the comment
+ * @returns The updated comment or null if not found
+ */
+export function updateComment(
+  characterId: CharacterId,
+  commentId: CommentId,
+  newText: string
+): Comment | null {
+  const allComments = getAllComments();
+  const characterComments = allComments[characterId] ?? [];
+
+  const commentIndex = characterComments.findIndex((c) => c.id === commentId);
+  if (commentIndex === -1) {
+    return null;
+  }
+
+  const existingComment = characterComments[commentIndex]!;
+  const updatedComment: Comment = {
+    id: existingComment.id,
+    characterId: existingComment.characterId,
+    text: newText,
+    author: existingComment.author,
+    createdAt: existingComment.createdAt,
+  };
+
+  characterComments[commentIndex] = updatedComment;
+  allComments[characterId] = characterComments;
+  saveAllComments(allComments);
+
+  return updatedComment;
+}
+
+/**
  * Delete all comments for a character.
  *
  * @param characterId - Character ID to delete comments for
