@@ -1,4 +1,11 @@
 import '@testing-library/jest-dom';
+import { afterEach } from 'vitest';
+import { cleanup } from '@testing-library/react';
+
+// Automatically cleanup after each test
+afterEach(() => {
+  cleanup();
+});
 
 // Mock IntersectionObserver
 (globalThis as typeof globalThis & { IntersectionObserver: typeof IntersectionObserver }).IntersectionObserver = class IntersectionObserver {

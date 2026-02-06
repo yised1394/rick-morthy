@@ -1,11 +1,10 @@
 import { useSearchParams } from 'react-router-dom';
 import { useCallback } from 'react';
+import type { CharacterStatus, CharacterGender } from '../types/character.types';
 import type {
-  CharacterStatus,
-  CharacterGender,
   CharacterTypeFilter,
   CharacterFiltersState,
-} from '../types/character.types';
+} from '../types/character-filter.types';
 import type { SortOption } from '@/shared/constants/app.constants';
 
 /**
@@ -29,23 +28,31 @@ export function useCharacterFilters() {
 
   const updateFilters = useCallback(
     (updates: Partial<CharacterFiltersState>) => {
-      const newParams = new URLSearchParams(searchParams);
+      setSearchParams((prev) => {
+        const newParams = new URLSearchParams(prev);
 
-      if (Object.keys(updates).some((key) => key !== 'page')) {
-        newParams.set('page', '1');
-      }
-
-      Object.entries(updates).forEach(([key, value]) => {
-        if (value === undefined || value === '') {
-          newParams.delete(key);
-        } else {
-          newParams.set(key, String(value));
+        const hasNonPageUpdate = Object.keys(updates).some((key) => key !== 'page');
+        if (hasNonPageUpdate) {
+          newParams.set('page', '1');
         }
-      });
 
-      setSearchParams(newParams, { replace: true });
+        Object.entries(updates).forEach(([key, val]) => {
+          if (val === undefined || val === '') {
+            newParams.delete(key);
+          } else {
+            newParams.set(key, String(val));
+          }
+        });
+
+        // Avoid no-op updates that would trigger re-renders
+        if (newParams.toString() === prev.toString()) {
+          return prev;
+        }
+
+        return newParams;
+      }, { replace: true });
     },
-    [searchParams, setSearchParams]
+    [setSearchParams]
   );
 
   const resetFilters = useCallback(() => {

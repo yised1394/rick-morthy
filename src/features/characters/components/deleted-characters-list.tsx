@@ -1,5 +1,6 @@
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { EmptyState } from '@/shared/components/ui/empty-state';
+import { RestoreIcon } from '@/shared/components/icons/restore-icon';
+import { DeletedSkeleton } from './deleted-skeleton';
 import type { DeletedCharacter } from '../types/character.types';
 
 interface DeletedCharactersListProps {
@@ -26,11 +27,7 @@ export function DeletedCharactersList({
   deletedCount,
 }: DeletedCharactersListProps) {
   if (isLoading) {
-    return (
-      <div className="flex justify-center py-12">
-        <LoadingSpinner />
-      </div>
-    );
+    return <DeletedSkeleton count={4} />;
   }
 
   if (characters.length === 0) {
@@ -102,14 +99,7 @@ export function DeletedCharactersList({
               className="flex-shrink-0 p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
               aria-label={`Restore ${character.name}`}
             >
-              <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                />
-              </svg>
+              <RestoreIcon size={20} />
             </button>
           </div>
         ))}

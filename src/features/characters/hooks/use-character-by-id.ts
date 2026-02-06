@@ -1,9 +1,10 @@
 import { useQuery } from '@apollo/client';
 import { GET_CHARACTER_BY_ID } from '../services/character.queries';
+import { createCharacterId } from '@/core/types/global.types';
 import type {
   GetCharacterByIdQuery,
   GetCharacterByIdQueryVariables,
-} from '../types/character.types';
+} from '../types/character-query.types';
 
 /**
  * Custom hook to fetch a single character by ID.
@@ -20,7 +21,7 @@ export function useCharacterById(id: string) {
   return useQuery<GetCharacterByIdQuery, GetCharacterByIdQueryVariables>(
     GET_CHARACTER_BY_ID,
     {
-      variables: { id },
+      variables: { id: createCharacterId(id) },
       skip: !id,
     }
   );

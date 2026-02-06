@@ -1,7 +1,6 @@
 import { createBrowserRouter } from 'react-router-dom';
 import { lazy, Suspense } from 'react';
 import { ROUTES } from './routes.config';
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 
 const HomePage = lazy(() => import('@/pages/home-page'));
 const CharactersPage = lazy(() => import('@/pages/characters-page'));
@@ -15,7 +14,7 @@ function PageLoader() {
   return (
     <div className="flex min-h-screen items-center justify-center">
       <div className="text-center">
-        <LoadingSpinner size="lg" />
+        <div className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent" role="status" />
         <p className="mt-4 text-sm text-neutral-600">Loading page...</p>
       </div>
     </div>

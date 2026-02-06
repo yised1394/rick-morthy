@@ -4,7 +4,6 @@ import type { CharacterId } from '@/core/types/global.types';
 import { useComments } from '../hooks/use-comments';
 import { CommentForm } from './comment-form';
 import { CommentList } from './comment-list';
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 
 interface CommentSectionProps {
   readonly characterId: CharacterId;
@@ -36,8 +35,8 @@ export function CommentSection({ characterId }: CommentSectionProps) {
       </div>
 
       {isLoading ? (
-        <div className="flex justify-center py-8">
-          <LoadingSpinner />
+        <div className="flex justify-center py-8 text-gray-500">
+          <p>Loading comments...</p>
         </div>
       ) : (
         <>

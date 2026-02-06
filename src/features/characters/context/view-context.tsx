@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-import type { ExplorerView } from '../types/character.types';
+import type { ExplorerView } from '../types/character-filter.types';
 
 interface ViewContextValue {
   readonly view: ExplorerView;

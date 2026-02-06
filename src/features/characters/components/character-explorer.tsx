@@ -11,13 +11,15 @@ import { CharacterListPanel } from './character-list-panel';
 import { CharacterDetail } from './character-detail';
 import { DeletedCharactersList } from './deleted-characters-list';
 import { CharacterListItem } from './character-list-item';
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
+import { CharacterListSkeleton } from './character-list-skeleton';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { EmptyState } from '@/shared/components/ui/empty-state';
 import { sortCharactersByName, filterDeletedCharacters } from '../utils/character.utils';
 import { getCharacterDetailRoute } from '@/core/config/routes.config';
 import { GET_CHARACTERS_BY_IDS } from '../services/character.queries';
-import type { CharacterFilter, CharacterBasic, GetCharactersByIdsQuery } from '../types/character.types';
+import type { CharacterBasic } from '../types/character.types';
+import type { CharacterFilter } from '../types/character-query.types';
+import type { GetCharactersByIdsQuery } from '../types/character-query.types';
 
 /**
  * Main character explorer component with unified views.
@@ -32,12 +34,12 @@ export function CharacterExplorer() {
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const apiFilter: CharacterFilter = {
+  const apiFilter = useMemo<CharacterFilter>(() => ({
     name: filters.name || undefined,
     status: filters.status || undefined,
     species: filters.species || undefined,
     gender: filters.gender || undefined,
-  };
+  }), [filters.name, filters.status, filters.species, filters.gender]);
 
   const { data, loading, error, refetch } = useCharacters({
     page: filters.page,
@@ -107,8 +109,8 @@ export function CharacterExplorer() {
 
   if (view === 'all' && loading && !data) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-[400px] p-4">
+        <CharacterListSkeleton count={6} />
       </div>
     );
   }
@@ -148,11 +150,10 @@ export function CharacterExplorer() {
             onPageChange={setPage}
           />
 
-          {/* Favorites view content */}
           {view === 'favorites' && (
             <div className="flex-1 overflow-y-auto">
               {loadingFavorites ? (
-                <div className="flex justify-center py-12"><LoadingSpinner /></div>
+                <div className="p-4"><CharacterListSkeleton count={4} /></div>
               ) : favoriteCharacters.length === 0 ? (
                 <EmptyState title="No favorites yet" description="Start exploring characters and add some to your favorites!" />
               ) : (
@@ -222,10 +223,9 @@ export function CharacterExplorer() {
           onPageChange={setPage}
         />
 
-        {/* Favorites view content */}
         {view === 'favorites' && (
           loadingFavorites ? (
-            <div className="flex justify-center py-12"><LoadingSpinner /></div>
+            <div className="p-4"><CharacterListSkeleton count={4} /></div>
           ) : favoriteCharacters.length === 0 ? (
             <EmptyState title="No favorites yet" description="Add some characters to favorites!" />
           ) : (

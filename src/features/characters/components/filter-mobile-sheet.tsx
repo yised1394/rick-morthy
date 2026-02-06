@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
-import type { CharacterFiltersState, CharacterTypeFilter } from '../types/character.types';
+import type { CharacterFiltersState, CharacterTypeFilter, SpeciesType } from '../types/character-filter.types';
 
 interface FilterMobileSheetProps {
   readonly isOpen: boolean;
@@ -8,8 +8,6 @@ interface FilterMobileSheetProps {
   readonly filters: CharacterFiltersState;
   readonly onApply: (filters: Partial<CharacterFiltersState>) => void;
 }
-
-type SpeciesType = 'all' | 'Human' | 'Alien';
 
 function getSpeciesFromFilters(species: string): SpeciesType {
   if (species === 'Human') return 'Human';

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
-import { useDebounce } from '@/shared/hooks/use-debounce';
+import { useState, useEffect, useRef, useCallback } from 'react';
+import { SearchIcon } from '@/shared/components/icons/search-icon';
+import { FilterIcon } from '@/shared/components/icons/filter-icon';
 
 interface SearchBarProps {
   readonly value: string;
@@ -9,6 +10,8 @@ interface SearchBarProps {
   readonly activeFiltersCount?: number;
   readonly isFilterOpen?: boolean;
 }
+
+const DEBOUNCE_DELAY = 800;
 
 /**
  * Search bar component with filter button (Figma design).
@@ -24,44 +27,52 @@ export function SearchBar({
 }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(value);
   const [isFilterHovered, setIsFilterHovered] = useState(false);
-  const debouncedValue = useDebounce(inputValue, 300);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
-  // Icon state: active (panel open) > hover > idle
   const showPillBackground = isFilterOpen || isFilterHovered;
 
+  // Sync external value changes (e.g. filter reset) only when user is not typing
   useEffect(() => {
-    if (debouncedValue !== value) {
-      onChange(debouncedValue);
+    if (!timerRef.current) {
+      setInputValue(value);
     }
-  }, [debouncedValue, value, onChange]);
-
-  useEffect(() => {
-    setInputValue(value);
   }, [value]);
+
+  const handleInputChange = useCallback((newValue: string) => {
+    setInputValue(newValue);
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      onChangeRef.current(newValue);
+    }, DEBOUNCE_DELAY);
+  }, []);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="relative flex items-center">
-      {/* Search Icon */}
-      <svg
-        className="absolute left-3 h-5 w-5 text-gray-400 pointer-events-none"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
+      <div className="absolute left-3 pointer-events-none">
+        <SearchIcon className="text-gray-400" size={20} />
+      </div>
 
       {/* Input */}
       <input
         type="text"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={(e) => handleInputChange(e.target.value)}
         placeholder={placeholder}
         className="
           w-full rounded-lg border border-gray-200 bg-gray-50
@@ -86,20 +97,7 @@ export function SearchBar({
         aria-label="Open filters"
         aria-expanded={isFilterOpen}
       >
-        <svg
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-          />
-        </svg>
+        <FilterIcon size={20} />
         {/* Active filters badge */}
         {activeFiltersCount > 0 && (
           <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary-600 text-[10px] font-medium text-white flex items-center justify-center">

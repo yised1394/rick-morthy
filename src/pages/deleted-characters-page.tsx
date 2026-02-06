@@ -5,7 +5,7 @@ import { MainLayout } from '@/shared/components/layout/main-layout';
 import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
 import { CharacterDetail } from '@/features/characters/components/character-detail';
 import { EmptyState } from '@/shared/components/ui/empty-state';
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
+import { DeletedSkeleton } from '@/features/characters/components/deleted-skeleton';
 import { ROUTES } from '@/core/config/routes.config';
 import type { CharacterId } from '@/core/types/global.types';
 import type { DeletedCharacter } from '@/features/characters/types/character.types';
@@ -153,8 +153,8 @@ function DeletedCharactersPage() {
           {/* Character list */}
           <div className="flex-1 overflow-y-auto py-2">
             {isLoading ? (
-              <div className="flex justify-center py-12">
-                <LoadingSpinner />
+              <div className="p-4">
+                <DeletedSkeleton count={4} />
               </div>
             ) : (
               deletedCharacters.map((character) => (
@@ -298,8 +298,8 @@ function DeletedCharactersPage() {
         </div>
 
         {isLoading ? (
-          <div className="flex justify-center py-12">
-            <LoadingSpinner />
+          <div className="p-4">
+            <DeletedSkeleton count={4} />
           </div>
         ) : (
           <div className="space-y-2">

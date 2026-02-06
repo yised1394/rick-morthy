@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
-import type { CharacterFiltersState, CharacterTypeFilter } from '../types/character.types';
+import { useState, useEffect,useRef } from 'react';
+import type { CharacterFiltersState, CharacterTypeFilter, SpeciesType } from '../types/character-filter.types';
 
 interface FilterDropdownProps {
   readonly isOpen: boolean;
@@ -8,7 +8,6 @@ interface FilterDropdownProps {
   readonly onApply: (filters: Partial<CharacterFiltersState>) => void;
 }
 
-type SpeciesType = 'all' | 'Human' | 'Alien';
 
 function getSpeciesFromFilters(species: string): SpeciesType {
   if (species === 'Human') return 'Human';

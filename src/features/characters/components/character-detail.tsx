@@ -1,6 +1,5 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useCharacterById } from "../hooks/use-character-by-id";
-import { LoadingSpinner } from "@/shared/components/ui/loading-spinner";
 import { ErrorMessage } from "@/shared/components/ui/error-message";
 import { FavoriteButton } from "@/features/favorites/components/favorite-button";
 import { DeleteButton } from "@/features/soft-delete/components/delete-button";
@@ -9,6 +8,7 @@ import { useSoftDeleteCharacters } from "@/features/soft-delete/hooks/use-soft-d
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { ROUTES } from "@/core/config/routes.config";
 import { createCharacterId } from "@/core/types/global.types";
+import { ChevronIcon } from "@/shared/components/icons/chevron-icon";
 import type { Character } from "../types/character.types";
 
 interface CharacterDetailProps {
@@ -85,8 +85,10 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
 
   if (loading) {
     return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <LoadingSpinner size="lg" />
+      <div className="min-h-screen p-4 space-y-4 animate-pulse">
+        <div className="h-8 w-24 bg-gray-200 rounded" />
+        <div className="h-64 bg-gray-200 rounded-xl" />
+        <div className="h-48 bg-gray-200 rounded-xl" />
       </div>
     );
   }
@@ -124,21 +126,7 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
             className="p-2.5 -ml-2.5 rounded-lg transition-all duration-150 active:scale-95 hover:bg-primary-100 text-primary-600"
             aria-label="Go back to character list"
           >
-            <svg
-              viewBox="0 0 38 38"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-10 w-10"
-              aria-hidden="true"
-            >
-              <path
-                d="M17 26L10 19M10 19L17 12M10 19L28 19"
-                stroke="currentColor"
-                strokeWidth={2}
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
+            <ChevronIcon direction="left" size={24} />
           </button>
         </div>
 
@@ -163,10 +151,17 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
             </div>
           </div>
 
-          {/* Name */}
-          <h1 className="text-xl font-bold text-gray-800 tracking-tight mb-6">
-            {character.name}
-          </h1>
+          {/* Name and Delete Button */}
+          <div className="flex items-center justify-between mb-6 gap-4">
+            <h1 className="text-xl font-bold text-gray-800 tracking-tight">
+              {character.name}
+            </h1>
+            <DeleteButton
+              characterId={character.id}
+              characterName={character.name}
+              size="md"
+            />
+          </div>
 
           {/* Info sections with dividers */}
           <div>

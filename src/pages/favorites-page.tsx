@@ -6,14 +6,15 @@ import { useFavorites } from '@/features/favorites/hooks/use-favorites';
 import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
 import { CharacterListItem } from '@/features/characters/components/character-list-item';
 import { CharacterDetail } from '@/features/characters/components/character-detail';
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
+import { FavoritesSkeleton } from '@/features/favorites/components/favorites-skeleton';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { EmptyState } from '@/shared/components/ui/empty-state';
 import { Button } from '@/shared/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ROUTES, getCharacterDetailRoute } from '@/core/config/routes.config';
 import { GET_CHARACTERS_BY_IDS } from '@/features/characters/services/character.queries';
-import type { CharacterBasic, GetCharactersByIdsQuery } from '@/features/characters/types/character.types';
+import type { CharacterBasic } from '@/features/characters/types/character.types';
+import type { GetCharactersByIdsQuery } from '@/features/characters/types/character-query.types';
 
 /**
  * Favorites page with split view layout.
@@ -68,8 +69,8 @@ function FavoritesPage() {
   if (loading) {
     return (
       <MainLayout>
-        <div className="flex min-h-[400px] items-center justify-center">
-          <LoadingSpinner size="lg" />
+        <div className="p-4">
+          <FavoritesSkeleton count={6} />
         </div>
       </MainLayout>
     );

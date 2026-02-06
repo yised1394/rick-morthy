@@ -1,151 +1,351 @@
 # Rick and Morty Character Explorer
 
-> Modern Progressive Web App to explore characters from Rick and Morty series
+> A modern, production-ready React application for exploring characters from the Rick and Morty universe. Built with TypeScript, GraphQL, and best practices.
 
-## Tech Stack
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-18-61DAFB)](https://reactjs.org/)
+[![Tests](https://img.shields.io/badge/Tests-56%20passing-success)](./docs/testing.md)
+[![License](https://img.shields.io/badge/License-MIT-green)](./LICENSE)
 
-- React 18.3.1
-- TypeScript 5.6.3
-- React Router DOM 6.26.2
-- Apollo Client 3.11.8
-- Tailwind CSS 4.0.0
-- Vite 5.4.11
-- PWA (vite-plugin-pwa 0.20.5)
-
-## Features
-
-- Search and filter characters
-- Mark favorites (synced across tabs)
-- Add comments
-- Fully responsive
-- Works offline (PWA)
-- Update notifications
-- Installable on any device
-- Accessibility compliant (WCAG 2.1 AA)
-- Optimized performance
-
-## PWA Features
-
-- Service Worker with intelligent caching
-- Offline functionality
-- Install prompt for desktop and mobile
-- Push notifications for updates
-- App-like experience when installed
-- Fast load times with pre-caching
-
-## Getting Started
-
-### Prerequisites
-
-- Node.js 20.x or higher
-- npm 10.x or higher
-
-### Installation
+## 🚀 Quick Start
 
 ```bash
-# Clone repository
-git clone [url]
-
-# Install dependencies (exact versions, no caret)
+# Install dependencies
 npm install
 
 # Start development server
 npm run dev
+
+# Run tests
+npm run test
+
+# Build for production
+npm run build
 ```
 
-### Available Scripts
+Visit `http://localhost:5173` to see the app running.
 
-- `npm run dev` - Start development server (PWA enabled)
-- `npm run build` - Build for production with PWA
-- `npm run preview` - Preview production build
-- `npm run test` - Run tests
-- `npm run test:coverage` - Run tests with coverage
-- `npm run lint` - Run ESLint
-- `npm run type-check` - Run TypeScript compiler
+---
 
-## Architecture
+## 📋 Table of Contents
 
-This project follows a feature-based architecture with strict separation of concerns:
+- [Features](#-features)
+- [Tech Stack](#-tech-stack)
+- [Project Structure](#-project-structure)
+- [Getting Started](#-getting-started)
+- [Available Scripts](#-available-scripts)
+- [Testing](#-testing)
+- [Environment Variables](#-environment-variables)
+- [Documentation](#-documentation)
+- [Contributing](#-contributing)
 
-- **Core**: App initialization, routing, providers
-- **Features**: Self-contained modules (characters, favorites, comments)
-- **Shared**: Reusable components, hooks, utilities
-- **PWA**: Progressive Web App components and utilities
+---
 
-## Project Structure
+## ✨ Features
+
+### Core Features
+- 🎯 **Character Explorer** - Browse 800+ Rick and Morty characters
+- 🔍 **Advanced Filtering** - Filter by status, species, and gender
+- ⭐ **Favorites System** - Mark and manage favorite characters
+- 💬 **Comments** - Add personal notes to characters
+- 🗑️ **Soft Delete** - Remove characters with restore capability
+- 📱 **Fully Responsive** - Works on all devices
+- 🎨 **Modern UI** - Built with TailwindCSS
+- ⚡ **PWA Support** - Install as native app
+
+### Technical Features
+- ✅ **100% TypeScript** - Full type safety
+- ✅ **GraphQL API** - Efficient data fetching with Apollo Client
+- ✅ **56+ Unit Tests** - Comprehensive test coverage
+- ✅ **SOLID Principles** - Clean, maintainable architecture
+- ✅ **Atomic Design** - Reusable component structure
+- ✅ **LocalStorage Persistence** - Data survives refreshes
+- ✅ **Skeleton Loaders** - Smooth loading UX
+- ✅ **Error Handling** - Retry logic with exponential backoff
+
+---
+
+## 🛠 Tech Stack
+
+### Frontend
+- **React 18** - UI library
+- **TypeScript 5.6** - Type safety
+- **Vite 6** - Build tool & dev server
+- **TailwindCSS 3** - Styling
+- **React Router DOM 7** - Client-side routing
+
+### Data & State
+- **Apollo Client** - GraphQL client
+- **Context API** - Global state management
+- **LocalStorage** - Client-side persistence
+
+### Testing
+- **Vitest** - Test runner
+- **Testing Library** - Component testing
+- **56 Unit Tests** - Components, hooks, utils, integration
+
+### Tools & Quality
+- **ESLint** - Code linting
+- **TypeScript** - Static type checking
+- **Vite PWA** - Progressive Web App support
+
+---
+
+## 📁 Project Structure
 
 ```
-src/
-├── core/                           # App initialization
-│   ├── config/
-│   │   ├── apollo.config.ts        # Apollo Client setup
-│   │   ├── routes.config.ts        # Route definitions
-│   │   ├── router.tsx              # Router configuration
-│   │   └── pwa.config.ts           # PWA registration
-│   ├── providers/
-│   │   └── app-providers.tsx       # All providers combined
-│   └── types/
-│       └── global.types.ts         # Global type definitions
-│
-├── features/                       # Feature modules
-│   ├── characters/
-│   │   ├── components/
-│   │   ├── hooks/
-│   │   ├── services/
-│   │   ├── types/
-│   │   └── utils/
-│   ├── favorites/
-│   │   ├── components/
-│   │   ├── context/
-│   │   ├── hooks/
-│   │   └── types/
-│   └── comments/
-│       ├── components/
-│       ├── hooks/
-│       ├── services/
-│       └── types/
-│
-├── pages/                          # Route-level components
-│
-├── shared/                         # Shared across features
-│   ├── components/
-│   │   ├── ui/
-│   │   ├── layout/
-│   │   └── pwa/
-│   ├── hooks/
-│   ├── utils/
-│   └── constants/
-│
-├── styles/
-│   └── tailwind.css                # Tailwind v4 config
-│
-├── App.tsx
-└── main.tsx
+rick-morthy/
+├── src/
+│   ├── core/                    # Core configuration
+│   │   ├── config/              # Apollo, Router, PWA config
+│   │   └── types/               # Global type definitions
+│   ├── features/                # Feature-based modules
+│   │   ├── characters/          # Character browsing & filtering
+│   │   ├── comments/            # Comment system
+│   │   ├── favorites/           # Favorites management
+│   │   └── soft-delete/         # Soft delete functionality
+│   ├── shared/                  # Shared utilities & components
+│   │   ├── components/          # Reusable UI components
+│   │   ├── constants/           # App constants
+│   │   └── utils/               # Helper functions
+│   ├── pages/                   # Route pages
+│   └── test/                    # Test suites
+│       ├── features/            # Feature tests
+│       ├── integration/         # Integration tests
+│       └── shared/              # Shared component tests
+├── docs/                        # Documentation
+│   ├── architecture.md          # Architecture overview
+│   ├── api.md                   # GraphQL API docs
+│   ├── testing.md               # Testing guide
+│   └── deployment.md            # Deployment guide
+├── .env.example                 # Environment variables template
+└── README.md                    # This file
 ```
 
-## PWA Setup
+---
 
-The app is configured as a Progressive Web App with:
+## 🏁 Getting Started
 
-1. **Manifest**: Complete web app manifest with all required icons
-2. **Service Worker**: Workbox-powered SW with smart caching strategies
-3. **Offline Support**: API responses and images cached for offline use
-4. **Update Strategy**: Automatic updates with user notification
-5. **Install Prompt**: Custom UI for installation on mobile/desktop
+### Prerequisites
 
-### Cache Strategies
+- **Node.js** >= 18.0.0
+- **npm** >= 9.0.0
 
-- **API Calls**: Network First (10s timeout, falls back to cache)
-- **Images**: Cache First (100 entries, 30 days expiration)
-- **Fonts**: Stale While Revalidate
-- **Static Assets**: Pre-cached during install
+### Installation
 
-## Browser Support
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd rick-morthy
+   ```
 
-- Chrome/Edge 111+
-- Safari 16.4+
-- Firefox 128+
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-## License
+3. **Configure environment**
+   ```bash
+   cp .env.example .env
+   ```
+   
+   Edit `.env` if needed (default values work out of the box)
 
-MIT
+4. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open browser**
+   
+   Navigate to `http://localhost:5173`
+
+---
+
+## 📜 Available Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run dev` | Start development server with hot reload |
+| `npm run build` | Build production bundle |
+| `npm run preview` | Preview production build locally |
+| `npm run test` | Run test suite in watch mode |
+| `npm run test:coverage` | Generate test coverage report |
+| `npm run type-check` | Run TypeScript type checking |
+| `npm run lint` | Run ESLint code linting |
+
+---
+
+## 🧪 Testing
+
+The project includes a comprehensive test suite with **56 tests** covering:
+
+- ✅ Component rendering & behavior
+- ✅ Custom hooks & state management
+- ✅ Utility functions & helpers
+- ✅ Integration scenarios
+- ✅ LocalStorage persistence
+
+### Running Tests
+
+```bash
+# Run all tests
+npm run test
+
+# Run with coverage
+npm run test:coverage
+
+# Run specific test file
+npm run test character-card
+```
+
+### Test Results
+```
+✅ 56/56 tests passing (100%)
+✅ Components: 15 tests
+✅ Hooks: 19 tests
+✅ Utils: 13 tests
+✅ Integration: 9 tests
+```
+
+For detailed testing documentation, see [docs/testing.md](./docs/testing.md)
+
+---
+
+## 🔐 Environment Variables
+
+Create a `.env` file in the project root:
+
+```env
+# GraphQL API Endpoint
+VITE_API_GRAPHQL_ENDPOINT=https://rickandmortyapi.com/graphql
+
+# Application Name
+VITE_APP_NAME=Rick and Morty Explorer
+
+# Enable PWA (optional)
+VITE_ENABLE_PWA=true
+```
+
+All variables are type-safe through `src/vite-env.d.ts`
+
+---
+
+## 📚 Documentation
+
+Comprehensive documentation is available in the `/docs` folder:
+
+- **[Architecture Guide](./docs/architecture.md)** - System design & patterns
+- **[API Documentation](./docs/api.md)** - GraphQL queries & mutations
+- **[Testing Guide](./docs/testing.md)** - Testing strategy & examples
+- **[Deployment Guide](./docs/deployment.md)** - Production deployment steps
+- **[Contributing Guide](./docs/contributing.md)** - Development guidelines
+
+---
+
+## 🎯 Key Features Explained
+
+### Character Explorer
+Browse characters with:
+- Pagination (20 per page)
+- Real-time search
+- Multi-criteria filtering
+- Instant sorting (A-Z, Z-A)
+
+### Favorites System
+- Add/remove with one click
+- Persistent across sessions
+- Dedicated favorites view
+- LocalStorage backed
+
+### Comments
+- Character-specific notes
+- Timestamp tracking
+- Edit & delete support
+- Author attribution
+
+### Soft Delete
+- Non-destructive removal
+- Restore capability
+- Separate deleted view
+- Permanent delete option
+
+---
+
+## 🏗 Architecture Highlights
+
+### SOLID Principles
+- **S**ingle Responsibility - Each component/module has one purpose
+- **O**pen/Closed - Easy to extend without modification
+- **L**iskov Substitution - Interfaces are properly abstracted
+- **I**nterface Segregation - Atomic type definitions
+- **D**ependency Inversion - High-level modules don't depend on low-level
+
+### Design Patterns
+- **Feature-based architecture** - Code organized by feature
+- **Context pattern** - Centralized state management
+- **Custom hooks** - Reusable business logic
+- **Branded types** - Type-safe IDs
+- **Atomic design** - Component hierarchy
+
+---
+
+## 🚀 Deployment
+
+### Vercel (Recommended)
+
+```bash
+# Install Vercel CLI
+npm i -g vercel
+
+# Deploy
+vercel
+```
+
+### Netlify
+
+```bash
+# Build
+npm run build
+
+# Deploy dist/ folder
+```
+
+For detailed deployment instructions, see [docs/deployment.md](./docs/deployment.md)
+
+---
+
+## 🤝 Contributing
+
+Contributions are welcome! Please read [CONTRIBUTING.md](./docs/contributing.md) for:
+
+- Code style guidelines
+- Testing requirements
+- Pull request process
+- Development workflow
+
+---
+
+## 📝 License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+
+---
+
+## 🙏 Acknowledgments
+
+- **Rick and Morty API** - [rickandmortyapi.com](https://rickandmortyapi.com)
+- **Rick and Morty** - Created by Justin Roiland and Dan Harmon
+
+---
+
+## 📞 Support
+
+For questions or issues:
+- Open an [Issue](../../issues)
+- Check [Documentation](./docs/)
+- Review [FAQ](./docs/faq.md)
+
+---
+
+**Made with ❤️ using React + TypeScript**

@@ -2,6 +2,7 @@ import { useNavigate } from 'react-router-dom';
 import { getCharacterDetailRoute } from '@/core/config/routes.config';
 import { Badge, getStatusVariant } from '@/shared/components/ui/badge';
 import { FavoriteButton } from '@/features/favorites/components/favorite-button';
+import { AsyncImage } from '@/shared/components/ui/async-image';
 import type { CharacterBasic } from '../types/character.types';
 
 interface CharacterCardProps {
@@ -49,11 +50,10 @@ export function CharacterCard({ character }: CharacterCardProps) {
       </div>
 
       <div className="aspect-square overflow-hidden">
-        <img
+        <AsyncImage
           src={character.image}
           alt={character.name}
           className="h-full w-full object-cover transition-transform group-hover:scale-105"
-          loading="lazy"
         />
       </div>
 
