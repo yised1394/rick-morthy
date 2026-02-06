@@ -26,10 +26,8 @@ export function SearchBar({
 }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(value);
   const [isFilterHovered, setIsFilterHovered] = useState(false);
-  // Increased to 1200ms to drastically reduce API calls and avoid 429 errors
   const debouncedValue = useDebounce(inputValue, 1200);
 
-  // Icon state: active (panel open) > hover > idle
   const showPillBackground = isFilterOpen || isFilterHovered;
 
   useEffect(() => {
@@ -39,16 +37,13 @@ export function SearchBar({
   }, [debouncedValue, value, onChange]);
 
   useEffect(() => {
-    // Only update local state if parent value actually changes and mismatches
-    // This prevents circular updates where child updates parent -> parent updates child
     if (value !== undefined && value !== debouncedValue) {
       setInputValue(value);
     }
-  }, [value]); // Remove debouncedValue from dependency to avoid loop
+  }, [value]);
 
   return (
     <div className="relative flex items-center">
-      {/* Search Icon */}
       <div className="absolute left-3 pointer-events-none">
         <SearchIcon className="text-gray-400" size={20} />
       </div>
