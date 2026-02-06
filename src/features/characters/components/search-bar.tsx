@@ -11,7 +11,7 @@ interface SearchBarProps {
   readonly isFilterOpen?: boolean;
 }
 
-const DEBOUNCE_DELAY = 500;
+const DEBOUNCE_DELAY = 800;
 
 /**
  * Search bar component with filter button (Figma design).
