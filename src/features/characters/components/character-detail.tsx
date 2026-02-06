@@ -128,16 +128,18 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
             aria-label="Go back to character list"
           >
             <svg
-              className="h-6 w-6 text-primary-600"
+              viewBox="0 0 38 38"
               fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-10 w-10"
+              aria-hidden="true"
             >
               <path
+                d="M17 26L10 19M10 19L17 12M10 19L28 19"
+                stroke="currentColor"
+                strokeWidth={2}
                 strokeLinecap="round"
                 strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
               />
             </svg>
           </button>
