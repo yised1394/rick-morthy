@@ -1,0 +1,205 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .card {
+    @apply rounded-lg bg-card p-6 shadow-md;
+  }
+
+  .card-header {
+    @apply mb-4 border-b border-gray-200 pb-4;
+  }
+
+  .card-title {
+    @apply text-xl font-semibold text-card-foreground;
+  }
+
+  .card-body {
+    @apply text-sm text-gray-700;
+  }
+
+  .btn {
+    @apply inline-flex items-center justify-center rounded-md
+           px-4 py-2 text-sm font-medium transition-colors
+           focus-visible:outline-none focus-visible:ring-2
+           focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50;
+  }
+
+  .btn-primary {
+    @apply bg-primary-600 text-white hover:bg-primary-700 focus-visible:ring-primary-600;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 text-gray-900 hover:bg-gray-300 focus-visible:ring-gray-400;
+  }
+
+  .btn-ghost {
+    @apply bg-transparent hover:bg-gray-100 text-gray-700 focus-visible:ring-gray-400;
+  }
+
+  .btn-danger {
+    @apply bg-danger text-white hover:opacity-90 focus-visible:ring-danger;
+  }
+
+  .btn-sm {
+    @apply px-3 py-1.5 text-xs;
+  }
+
+  .btn-lg {
+    @apply px-6 py-3 text-base;
+  }
+
+  .input {
+    @apply w-full rounded-lg border border-gray-200
+           bg-white px-4 py-3 text-sm
+           placeholder:text-gray-400
+           focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-100
+           disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .badge {
+    @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium;
+  }
+
+  .badge-alive {
+    @apply bg-secondary-600/20 text-secondary-600;
+  }
+
+  .badge-dead {
+    @apply bg-danger/20 text-danger;
+  }
+
+  .badge-unknown {
+    @apply bg-gray-200 text-gray-600;
+  }
+
+  .skeleton {
+    @apply animate-pulse rounded-md bg-gray-200;
+  }
+
+  .container {
+    @apply mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Filter chip styles matching Figma */
+  .filter-chip {
+    @apply inline-flex items-center justify-center px-4 py-2 rounded-lg border border-gray-200
+           text-sm font-medium text-gray-700 bg-white cursor-pointer transition-all
+           hover:border-primary-600 hover:text-primary-600;
+  }
+
+  .filter-chip-active {
+    @apply bg-primary-100 border-primary-100 text-primary-600;
+  }
+
+  /* Character list item styles */
+  .character-list-item {
+    @apply flex items-center gap-3 p-4 rounded-lg cursor-pointer transition-all
+           hover:bg-gray-50 border-l-4 border-transparent;
+  }
+
+  .character-list-item-selected {
+    @apply bg-primary-100 border-l-primary-600;
+  }
+
+  /* Search bar with icon */
+  .search-container {
+    @apply relative flex items-center;
+  }
+
+  .search-input {
+    @apply w-full rounded-lg border border-gray-200 bg-gray-50
+           pl-10 pr-12 py-3 text-sm
+           placeholder:text-gray-400
+           focus:border-primary-600 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:bg-white;
+  }
+
+  .search-icon {
+    @apply absolute left-3 h-5 w-5 text-gray-400;
+  }
+
+  .filter-button {
+    @apply absolute right-3 p-1 text-gray-400 hover:text-primary-600 transition-colors;
+  }
+
+  /* Section headers */
+  .section-header {
+    @apply text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2;
+  }
+}
+
+@layer base {
+  html {
+    @apply scroll-smooth antialiased;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-semibold tracking-tight;
+  }
+
+  h1 {
+    @apply text-2xl;
+  }
+
+  h2 {
+    @apply text-xl;
+  }
+
+  h3 {
+    @apply text-lg;
+  }
+
+  h4 {
+    @apply text-base;
+  }
+
+  a {
+    @apply text-primary-600 hover:text-primary-700 transition-colors;
+  }
+}
+
+/* View Transitions for smooth SPA navigation */
+@layer utilities {
+  /* Enable view transitions */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 0.25s;
+  }
+
+  /* Fade and slide animation */
+  ::view-transition-old(root) {
+    animation: fade-out 0.15s ease-out both;
+  }
+
+  ::view-transition-new(root) {
+    animation: fade-in 0.15s ease-in 0.1s both;
+  }
+
+  @keyframes fade-out {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+
+  @keyframes fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  /* Smooth content transitions */
+  .view-transition-fade {
+    view-transition-name: main-content;
+  }
+}
