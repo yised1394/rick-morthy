@@ -1,19 +1,12 @@
 import { useSearchParams } from 'react-router-dom';
 import { useCallback } from 'react';
-import type { CharacterStatus, CharacterGender } from '../types/character.types';
+import type {
+  CharacterStatus,
+  CharacterGender,
+  CharacterTypeFilter,
+  CharacterFiltersState,
+} from '../types/character.types';
 import type { SortOption } from '@/shared/constants/app.constants';
-
-export type CharacterTypeFilter = 'all' | 'starred' | 'others';
-
-export interface CharacterFiltersState {
-  readonly page: number;
-  readonly name: string;
-  readonly status: CharacterStatus | '';
-  readonly species: string;
-  readonly gender: CharacterGender | '';
-  readonly sortBy: SortOption | '';
-  readonly characterType: CharacterTypeFilter;
-}
 
 /**
  * Hook to manage character filters via URL search params.

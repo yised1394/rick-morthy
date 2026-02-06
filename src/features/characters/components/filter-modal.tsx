@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import type { CharacterFiltersState } from '../hooks/use-character-filters';
+import type { CharacterFiltersState } from '../types/character.types';
 
 interface FilterModalProps {
   readonly isOpen: boolean;

@@ -1,9 +1,5 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from 'react';
-
-/**
- * View types for the character explorer.
- */
-export type ExplorerView = 'all' | 'favorites' | 'deleted';
+import type { ExplorerView } from '../types/character.types';
 
 interface ViewContextValue {
   readonly view: ExplorerView;

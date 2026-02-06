@@ -1,5 +1,4 @@
 import { useQuery } from '@apollo/client';
-import { gql } from '@apollo/client';
 import { useFavorites } from '../hooks/use-favorites';
 import { CharacterCard } from '@/features/characters/components/character-card';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
@@ -8,24 +7,8 @@ import { EmptyState } from '@/shared/components/ui/empty-state';
 import { Button } from '@/shared/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/core/config/routes.config';
-import type { CharacterBasic } from '@/features/characters/types/character.types';
-
-const GET_CHARACTERS_BY_IDS = gql`
-  query GetCharactersByIds($ids: [ID!]!) {
-    charactersByIds(ids: $ids) {
-      id
-      name
-      image
-      species
-      status
-      gender
-    }
-  }
-`;
-
-interface GetCharactersByIdsQuery {
-  charactersByIds: CharacterBasic[];
-}
+import { GET_CHARACTERS_BY_IDS } from '@/features/characters/services/character.queries';
+import type { GetCharactersByIdsQuery } from '@/features/characters/types/character.types';
 
 /**
  * List of favorite characters.

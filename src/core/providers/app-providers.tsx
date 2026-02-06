@@ -3,8 +3,8 @@ import { ApolloProvider } from '@apollo/client';
 import { Toaster } from 'sonner';
 import { apolloClient } from '../config/apollo.config';
 import { FavoritesProvider } from '@/features/favorites/context/favorites-context';
-import { SoftDeleteProvider } from '@/features/soft-delete';
-import { ViewProvider } from '@/features/characters/context';
+import { SoftDeleteProvider } from '@/features/soft-delete/context/soft-delete-context';
+import { ViewProvider } from '@/features/characters/context/view-context';
 
 interface AppProvidersProps {
   readonly children: ReactNode;

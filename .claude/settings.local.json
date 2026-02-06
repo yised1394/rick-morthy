@@ -10,7 +10,8 @@
       "Bash(start npm run dev)",
       "Bash(tree:*)",
       "Bash(npx vite build)",
-      "Bash(npx vite:*)"
+      "Bash(npx vite:*)",
+      "Bash(python -c:*)"
     ]
   }
 }

@@ -1,7 +1,8 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import type { ReactNode } from 'react';
-import { SoftDeleteProvider, useSoftDeleteCharacters } from '@/features/soft-delete';
+import { SoftDeleteProvider } from '@/features/soft-delete/context/soft-delete-context';
+import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
 import { createCharacterId } from '@/core/types/global.types';
 
 /**

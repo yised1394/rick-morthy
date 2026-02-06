@@ -55,6 +55,8 @@ export default {
         'fade-in': 'fade-in 0.2s ease-out',
         'dropdown-in': 'dropdown-in 0.2s ease-out',
         'dropdown-out': 'dropdown-out 0.15s ease-in forwards',
+        'sheet-slide-up': 'sheet-slide-up 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+        'overlay-fade-in': 'overlay-fade-in 0.3s ease-out',
       },
       keyframes: {
         'slide-in': {
@@ -72,6 +74,14 @@ export default {
         'dropdown-out': {
           from: { opacity: '1', transform: 'translateY(0)' },
           to: { opacity: '0', transform: 'translateY(-8px)' },
+        },
+        'sheet-slide-up': {
+          from: { transform: 'translateY(100%)' },
+          to: { transform: 'translateY(0)' },
+        },
+        'overlay-fade-in': {
+          from: { opacity: '0' },
+          to: { opacity: '1' },
         },
       },
     },

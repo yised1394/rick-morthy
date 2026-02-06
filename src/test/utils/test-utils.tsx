@@ -2,7 +2,7 @@ import type { ReactNode } from 'react';
 import { render, type RenderOptions } from '@testing-library/react';
 import { MemoryRouter, type MemoryRouterProps } from 'react-router-dom';
 import { MockedProvider, type MockedProviderProps } from '@apollo/client/testing';
-import { SoftDeleteProvider } from '@/features/soft-delete';
+import { SoftDeleteProvider } from '@/features/soft-delete/context/soft-delete-context';
 import { FavoritesProvider } from '@/features/favorites/context/favorites-context';
 
 /**

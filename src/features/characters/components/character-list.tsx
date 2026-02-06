@@ -8,7 +8,7 @@ import { Pagination } from './pagination';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { EmptyState } from '@/shared/components/ui/empty-state';
-import { useSoftDeleteCharacters } from '@/features/soft-delete';
+import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
 import { sortCharactersByName, filterDeletedCharacters } from '../utils/character.utils';
 import type { CharacterFilter } from '../types/character.types';
 

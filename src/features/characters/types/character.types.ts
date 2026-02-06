@@ -1,4 +1,5 @@
 import type { CharacterId, EpisodeId, PaginationInfo } from '@/core/types/global.types';
+import type { SortOption } from '@/shared/constants/app.constants';
 
 /**
  * Character entity from the Rick and Morty API.
@@ -96,4 +97,44 @@ export interface GetCharacterByIdQuery {
  */
 export interface GetCharacterByIdQueryVariables {
   readonly id: string;
+}
+
+/**
+ * GraphQL query response for fetching characters by IDs.
+ */
+export interface GetCharactersByIdsQuery {
+  readonly charactersByIds: readonly CharacterBasic[];
+}
+
+/**
+ * View types for the character explorer.
+ */
+export type ExplorerView = 'all' | 'favorites' | 'deleted';
+
+/**
+ * Character type filter for starred/others filtering.
+ */
+export type CharacterTypeFilter = 'all' | 'starred' | 'others';
+
+/**
+ * State for character filters managed via URL search params.
+ */
+export interface CharacterFiltersState {
+  readonly page: number;
+  readonly name: string;
+  readonly status: CharacterStatus | '';
+  readonly species: string;
+  readonly gender: CharacterGender | '';
+  readonly sortBy: SortOption | '';
+  readonly characterType: CharacterTypeFilter;
+}
+
+/**
+ * Deleted character data for display in deleted view.
+ */
+export interface DeletedCharacter {
+  readonly id: CharacterId;
+  readonly name: string;
+  readonly image: string;
+  readonly species: string;
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import type { CharacterFiltersState, CharacterTypeFilter } from '../hooks/use-character-filters';
+import type { CharacterFiltersState, CharacterTypeFilter } from '../types/character.types';
 
 interface FilterDropdownProps {
   readonly isOpen: boolean;

@@ -1,9 +1,9 @@
 import { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useQuery, gql } from '@apollo/client';
+import { useQuery } from '@apollo/client';
 import { MainLayout } from '@/shared/components/layout/main-layout';
 import { useFavorites } from '@/features/favorites/hooks/use-favorites';
-import { useSoftDeleteCharacters } from '@/features/soft-delete';
+import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
 import { CharacterListItem } from '@/features/characters/components/character-list-item';
 import { CharacterDetail } from '@/features/characters/components/character-detail';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
@@ -12,24 +12,8 @@ import { EmptyState } from '@/shared/components/ui/empty-state';
 import { Button } from '@/shared/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ROUTES, getCharacterDetailRoute } from '@/core/config/routes.config';
-import type { CharacterBasic } from '@/features/characters/types/character.types';
-
-const GET_CHARACTERS_BY_IDS = gql`
-  query GetCharactersByIds($ids: [ID!]!) {
-    charactersByIds(ids: $ids) {
-      id
-      name
-      image
-      species
-      status
-      gender
-    }
-  }
-`;
-
-interface GetCharactersByIdsQuery {
-  charactersByIds: CharacterBasic[];
-}
+import { GET_CHARACTERS_BY_IDS } from '@/features/characters/services/character.queries';
+import type { CharacterBasic, GetCharactersByIdsQuery } from '@/features/characters/types/character.types';
 
 /**
  * Favorites page with split view layout.

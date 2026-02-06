@@ -4,7 +4,7 @@ import { Button } from '@/shared/components/ui/button';
 import { useDebounce } from '@/shared/hooks/use-debounce';
 import { useEffect } from 'react';
 import { CHARACTER_STATUS, CHARACTER_GENDER } from '@/shared/constants/app.constants';
-import type { CharacterFiltersState } from '../hooks/use-character-filters';
+import type { CharacterFiltersState } from '../types/character.types';
 
 interface CharacterFiltersProps {
   readonly filters: CharacterFiltersState;

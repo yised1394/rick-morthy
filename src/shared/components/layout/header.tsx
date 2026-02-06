@@ -1,8 +1,8 @@
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/core/config/routes.config';
 import { useFavorites } from '@/features/favorites/hooks/use-favorites';
-import { useSoftDeleteCharacters } from '@/features/soft-delete';
-import { useView } from '@/features/characters/context';
+import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
+import { useView } from '@/features/characters/context/view-context';
 
 /**
  * Application header with navigation.

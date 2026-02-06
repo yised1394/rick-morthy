@@ -2,22 +2,13 @@ import { useEffect, useState, useCallback } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { MainLayout } from '@/shared/components/layout/main-layout';
-import { useSoftDeleteCharacters } from '@/features/soft-delete';
+import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
 import { CharacterDetail } from '@/features/characters/components/character-detail';
 import { EmptyState } from '@/shared/components/ui/empty-state';
 import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ROUTES } from '@/core/config/routes.config';
 import type { CharacterId } from '@/core/types/global.types';
-
-/**
- * Character data structure for display.
- */
-interface DeletedCharacter {
-  readonly id: CharacterId;
-  readonly name: string;
-  readonly image: string;
-  readonly species: string;
-}
+import type { DeletedCharacter } from '@/features/characters/types/character.types';
 
 /**
  * Page for viewing and restoring deleted characters.

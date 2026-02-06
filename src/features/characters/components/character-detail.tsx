@@ -5,7 +5,9 @@ import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { FavoriteButton } from '@/features/favorites/components/favorite-button';
 import { DeleteButton } from '@/features/soft-delete/components/delete-button';
 import { CommentSection } from '@/features/comments/components/comment-section';
-import { useSoftDeleteCharacters } from '@/features/soft-delete';
+import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
+import { useFavorites } from '@/features/favorites/hooks/use-favorites';
+import { useMediaQuery } from '@/shared/hooks/use-media-query';
 import { ROUTES } from '@/core/config/routes.config';
 import { createCharacterId } from '@/core/types/global.types';
 import type { Character } from '../types/character.types';
@@ -22,10 +24,12 @@ interface CharacterDetailProps {
 export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
   const { id: routeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const isMobile = useMediaQuery('(max-width: 1023px)');
   const id = characterId ?? routeId ?? '';
   const { data, loading, error, refetch } = useCharacterById(id);
 
   const { isDeleted, restoreCharacter } = useSoftDeleteCharacters();
+  const { isFavorite } = useFavorites();
 
   const handleBack = () => {
     if (onBack) {
@@ -109,6 +113,84 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
   }
 
   const character = data.character;
+  const isFav = isFavorite(character.id);
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen bg-white">
+        <div className="mx-auto max-w-[375px] px-4 pt-4 pb-8">
+          {/* Back button */}
+          <button
+            type="button"
+            onClick={handleBack}
+            className="p-2.5 -ml-2.5 rounded-lg transition-all duration-150 active:scale-95 hover:bg-primary-100"
+            aria-label="Go back to character list"
+          >
+            <svg
+              className="h-6 w-6 text-primary-600"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+          </button>
+
+          {/* Avatar with favorite badge */}
+          <div className="mt-10 mb-4">
+            <div className="relative mx-auto w-[100px] h-[100px]">
+              <img
+                src={character.image}
+                alt={character.name}
+                className="w-full h-full rounded-full object-cover"
+              />
+              {isFav && (
+                <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-[3px] border-white bg-secondary-600">
+                  <svg
+                    className="h-3.5 w-3.5 fill-white text-white"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth={2}
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
+                    />
+                  </svg>
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Name */}
+          <h1 className="text-xl font-bold text-gray-800 tracking-tight mb-6">
+            {character.name}
+          </h1>
+
+          {/* Info sections with dividers */}
+          <div>
+            <MobileInfoSection label="Specie" value={character.species} className="pb-5" />
+            <div className="h-px w-full bg-gray-200" />
+            <MobileInfoSection label="Status" value={character.status} className="py-5" />
+            <div className="h-px w-full bg-gray-200" />
+            <MobileInfoSection label="Occupation" value={character.type || 'Unknown'} className="pt-5 pb-10" />
+          </div>
+
+          {/* Comments section */}
+          <div className="mt-8">
+            <CommentSection characterId={character.id} />
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="h-full px-[100px]">
@@ -161,6 +243,21 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
 interface CharacterInfoRowProps {
   readonly label: string;
   readonly value: string;
+}
+
+interface MobileInfoSectionProps {
+  readonly label: string;
+  readonly value: string;
+  readonly className?: string;
+}
+
+function MobileInfoSection({ label, value, className = '' }: MobileInfoSectionProps) {
+  return (
+    <div className={className}>
+      <dt className="text-base font-bold text-gray-800 tracking-tight mb-1.5">{label}</dt>
+      <dd className="text-[15px] text-gray-500">{value}</dd>
+    </div>
+  );
 }
 
 function CharacterInfoRow({ label, value }: CharacterInfoRowProps) {
