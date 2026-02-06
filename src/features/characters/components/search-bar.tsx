@@ -1,5 +1,4 @@
-import { useState, useEffect } from 'react';
-import { useDebounce } from '@/shared/hooks/use-debounce';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { SearchIcon } from '@/shared/components/icons/search-icon';
 import { FilterIcon } from '@/shared/components/icons/filter-icon';
 
@@ -11,6 +10,8 @@ interface SearchBarProps {
   readonly activeFiltersCount?: number;
   readonly isFilterOpen?: boolean;
 }
+
+const DEBOUNCE_DELAY = 500;
 
 /**
  * Search bar component with filter button (Figma design).
@@ -26,21 +27,40 @@ export function SearchBar({
 }: SearchBarProps) {
   const [inputValue, setInputValue] = useState(value);
   const [isFilterHovered, setIsFilterHovered] = useState(false);
-  const debouncedValue = useDebounce(inputValue, 1200);
+  const timerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
 
   const showPillBackground = isFilterOpen || isFilterHovered;
 
+  // Sync external value changes (e.g. filter reset) only when user is not typing
   useEffect(() => {
-    if (debouncedValue !== value) {
-      onChange(debouncedValue);
-    }
-  }, [debouncedValue, value, onChange]);
-
-  useEffect(() => {
-    if (value !== undefined && value !== debouncedValue) {
+    if (!timerRef.current) {
       setInputValue(value);
     }
   }, [value]);
+
+  const handleInputChange = useCallback((newValue: string) => {
+    setInputValue(newValue);
+
+    if (timerRef.current) {
+      clearTimeout(timerRef.current);
+    }
+
+    timerRef.current = setTimeout(() => {
+      timerRef.current = null;
+      onChangeRef.current(newValue);
+    }, DEBOUNCE_DELAY);
+  }, []);
+
+  // Cleanup timer on unmount
+  useEffect(() => {
+    return () => {
+      if (timerRef.current) {
+        clearTimeout(timerRef.current);
+      }
+    };
+  }, []);
 
   return (
     <div className="relative flex items-center">
@@ -52,7 +72,7 @@ export function SearchBar({
       <input
         type="text"
         value={inputValue}
-        onChange={(e) => setInputValue(e.target.value)}
+        onChange={(e) => handleInputChange(e.target.value)}
         placeholder={placeholder}
         className="
           w-full rounded-lg border border-gray-200 bg-gray-50
