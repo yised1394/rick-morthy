@@ -9,7 +9,8 @@ import { SORT_OPTIONS } from '@/shared/constants/app.constants';
 import { useView } from '../context/view-context';
 import { useFavorites } from '@/features/favorites/hooks/use-favorites';
 import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
-import type { CharacterFiltersState } from '../types/character.types';
+import { CloseIcon } from '@/shared/components/icons/close-icon';
+import type { CharacterFiltersState } from '../types/character-filter.types';
 import type { CharacterBasic } from '../types/character.types';
 
 interface CharacterListPanelProps {
@@ -140,9 +141,7 @@ export function CharacterListPanel({
                   aria-label="Clear all filters"
                 >
                   {activeFiltersCount} Filter{activeFiltersCount > 1 ? 's' : ''}
-                  <svg className="h-3 w-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
+                  <CloseIcon size={12} />
                 </button>
               )}
             </div>

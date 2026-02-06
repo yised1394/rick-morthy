@@ -1,4 +1,5 @@
 import { Button } from '@/shared/components/ui/button';
+import { ChevronIcon } from '@/shared/components/icons/chevron-icon';
 
 interface PaginationProps {
   readonly currentPage: number;
@@ -45,20 +46,7 @@ export function Pagination({
         aria-label="Go to previous page"
         className="!px-2"
       >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M15 19l-7-7 7-7"
-          />
-        </svg>
+        <ChevronIcon direction="left" size={16} />
       </Button>
 
       <div className="flex items-center gap-0.5">
@@ -122,20 +110,7 @@ export function Pagination({
         aria-label="Go to next page"
         className="!px-2"
       >
-        <svg
-          className="h-4 w-4"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M9 5l7 7-7 7"
-          />
-        </svg>
+        <ChevronIcon direction="right" size={16} />
       </Button>
     </nav>
   );

@@ -1,11 +1,10 @@
 import { useSearchParams } from 'react-router-dom';
 import { useCallback } from 'react';
+import type { CharacterStatus, CharacterGender } from '../types/character.types';
 import type {
-  CharacterStatus,
-  CharacterGender,
   CharacterTypeFilter,
   CharacterFiltersState,
-} from '../types/character.types';
+} from '../types/character-filter.types';
 import type { SortOption } from '@/shared/constants/app.constants';
 
 /**

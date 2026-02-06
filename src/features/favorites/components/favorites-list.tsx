@@ -1,14 +1,14 @@
 import { useQuery } from '@apollo/client';
 import { useFavorites } from '../hooks/use-favorites';
 import { CharacterCard } from '@/features/characters/components/character-card';
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { EmptyState } from '@/shared/components/ui/empty-state';
+import { FavoritesSkeleton } from './favorites-skeleton';
 import { Button } from '@/shared/components/ui/button';
 import { Link } from 'react-router-dom';
 import { ROUTES } from '@/core/config/routes.config';
 import { GET_CHARACTERS_BY_IDS } from '@/features/characters/services/character.queries';
-import type { GetCharactersByIdsQuery } from '@/features/characters/types/character.types';
+import type { GetCharactersByIdsQuery } from '@/features/characters/types/character-query.types';
 
 /**
  * List of favorite characters.
@@ -40,11 +40,7 @@ export function FavoritesList() {
   }
 
   if (loading) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+    return <FavoritesSkeleton count={4} />;
   }
 
   if (error) {

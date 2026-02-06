@@ -5,12 +5,11 @@ import { CharacterCard } from './character-card';
 import { CharacterFilters } from './character-filters';
 import { CharacterSort } from './character-sort';
 import { Pagination } from './pagination';
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
 import { ErrorMessage } from '@/shared/components/ui/error-message';
 import { EmptyState } from '@/shared/components/ui/empty-state';
 import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
 import { sortCharactersByName, filterDeletedCharacters } from '../utils/character.utils';
-import type { CharacterFilter } from '../types/character.types';
+import type { CharacterFilter } from '../types/character-query.types';
 
 /**
  * Main character list component with filtering, sorting, and pagination.
@@ -47,11 +46,7 @@ export function CharacterList() {
   }, [data?.characters.results, deletedCharacterIds, filters.sortBy]);
 
   if (loading && !data) {
-    return (
-      <div className="flex min-h-[400px] items-center justify-center">
-        <LoadingSpinner size="lg" />
-      </div>
-    );
+    return null; // Parent component shows skeleton
   }
 
   if (error) {
@@ -74,7 +69,7 @@ export function CharacterList() {
         />
         <CharacterSort
           value={filters.sortBy}
-          onChange={(sortBy) => updateFilters({ sortBy })}
+          onChange={(sortBy) => updateFilters({ sortBy: sortBy || undefined })}
         />
       </div>
 

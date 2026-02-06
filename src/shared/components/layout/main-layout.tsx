@@ -1,6 +1,4 @@
 import type { ReactNode } from 'react';
-import { Header } from './header';
-import { Footer } from './footer';
 import { OfflineIndicator } from '@/shared/components/pwa/offline-indicator';
 import { PWAUpdatePrompt } from '@/shared/components/pwa/pwa-update-prompt';
 import { InstallPrompt } from '@/shared/components/pwa/install-prompt';
@@ -10,22 +8,21 @@ interface MainLayoutProps {
 }
 
 /**
- * Main application layout with header, footer, and PWA components.
+ * Main application layout with PWA components.
+ * Provides fullscreen experience without header/footer.
  */
 export function MainLayout({ children }: MainLayoutProps) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-gray-50">
       <OfflineIndicator />
-      <Header />
 
-      <main className="container flex-1 py-8">
+      <main className="flex-1 w-full">
         {children}
       </main>
-
-      <Footer />
 
       <PWAUpdatePrompt />
       <InstallPrompt />
     </div>
   );
 }
+

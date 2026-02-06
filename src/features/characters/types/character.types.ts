@@ -1,5 +1,4 @@
-import type { CharacterId, EpisodeId, PaginationInfo } from '@/core/types/global.types';
-import type { SortOption } from '@/shared/constants/app.constants';
+import type { CharacterId, EpisodeId } from '@/core/types/global.types';
 
 /**
  * Character entity from the Rick and Morty API.
@@ -55,78 +54,6 @@ export interface Episode {
   readonly id: EpisodeId;
   readonly name: string;
   readonly episode: string;
-}
-
-/**
- * Filter options for character queries.
- */
-export interface CharacterFilter {
-  readonly name?: string;
-  readonly status?: CharacterStatus;
-  readonly species?: string;
-  readonly gender?: CharacterGender;
-}
-
-/**
- * GraphQL query response for characters list.
- */
-export interface GetCharactersQuery {
-  readonly characters: {
-    readonly info: PaginationInfo;
-    readonly results: readonly CharacterBasic[];
-  };
-}
-
-/**
- * GraphQL query variables for characters list.
- */
-export interface GetCharactersQueryVariables {
-  readonly page: number;
-  readonly filter?: CharacterFilter;
-}
-
-/**
- * GraphQL query response for single character.
- */
-export interface GetCharacterByIdQuery {
-  readonly character: Character | null;
-}
-
-/**
- * GraphQL query variables for single character.
- */
-export interface GetCharacterByIdQueryVariables {
-  readonly id: string;
-}
-
-/**
- * GraphQL query response for fetching characters by IDs.
- */
-export interface GetCharactersByIdsQuery {
-  readonly charactersByIds: readonly CharacterBasic[];
-}
-
-/**
- * View types for the character explorer.
- */
-export type ExplorerView = 'all' | 'favorites' | 'deleted';
-
-/**
- * Character type filter for starred/others filtering.
- */
-export type CharacterTypeFilter = 'all' | 'starred' | 'others';
-
-/**
- * State for character filters managed via URL search params.
- */
-export interface CharacterFiltersState {
-  readonly page: number;
-  readonly name: string;
-  readonly status: CharacterStatus | '';
-  readonly species: string;
-  readonly gender: CharacterGender | '';
-  readonly sortBy: SortOption | '';
-  readonly characterType: CharacterTypeFilter;
 }
 
 /**

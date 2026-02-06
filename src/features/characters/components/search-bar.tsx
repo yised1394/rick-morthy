@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useDebounce } from '@/shared/hooks/use-debounce';
+import { SearchIcon } from '@/shared/components/icons/search-icon';
+import { FilterIcon } from '@/shared/components/icons/filter-icon';
 
 interface SearchBarProps {
   readonly value: string;
@@ -42,20 +44,9 @@ export function SearchBar({
   return (
     <div className="relative flex items-center">
       {/* Search Icon */}
-      <svg
-        className="absolute left-3 h-5 w-5 text-gray-400 pointer-events-none"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth={2}
-          d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-        />
-      </svg>
+      <div className="absolute left-3 pointer-events-none">
+        <SearchIcon className="text-gray-400" size={20} />
+      </div>
 
       {/* Input */}
       <input
@@ -86,20 +77,7 @@ export function SearchBar({
         aria-label="Open filters"
         aria-expanded={isFilterOpen}
       >
-        <svg
-          className="h-5 w-5"
-          fill="none"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
-          aria-hidden="true"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
-          />
-        </svg>
+        <FilterIcon size={20} />
         {/* Active filters badge */}
         {activeFiltersCount > 0 && (
           <span className="absolute -top-1 -right-1 h-4 w-4 rounded-full bg-primary-600 text-[10px] font-medium text-white flex items-center justify-center">

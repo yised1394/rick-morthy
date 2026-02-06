@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
-import type { CharacterFiltersState } from '../types/character.types';
+import { ChevronIcon } from '@/shared/components/icons/chevron-icon';
+import type { CharacterFiltersState, CharacterType, SpeciesType } from '../types/character-filter.types';
 
 interface FilterModalProps {
   readonly isOpen: boolean;
@@ -7,9 +8,6 @@ interface FilterModalProps {
   readonly filters: CharacterFiltersState;
   readonly onApply: (filters: Partial<CharacterFiltersState>) => void;
 }
-
-type CharacterType = 'all' | 'starred' | 'others';
-type SpeciesType = 'all' | 'Human' | 'Alien';
 
 /**
  * Filter modal/page with chip-style selectors (Figma design).
@@ -64,19 +62,7 @@ export function FilterModal({
             className="text-primary-600 hover:text-primary-700 transition-colors"
             aria-label="Go back"
           >
-            <svg
-              className="h-5 w-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M15 19l-7-7 7-7"
-              />
-            </svg>
+            <ChevronIcon direction="left" size={20} />
           </button>
           <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
           <div className="w-5" /> {/* Spacer for centering */}

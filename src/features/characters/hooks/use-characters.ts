@@ -4,7 +4,7 @@ import type {
   GetCharactersQuery,
   GetCharactersQueryVariables,
   CharacterFilter,
-} from '../types/character.types';
+} from '../types/character-query.types';
 
 export interface UseCharactersOptions {
   readonly page: number;
