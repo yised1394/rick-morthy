@@ -151,12 +151,12 @@ export function ConfirmationModal({
           </p>
 
           {/* Actions */}
-          <div className="flex gap-3">
+          <div className="flex flex-col-reverse gap-3 sm:flex-row">
             <button
               ref={cancelButtonRef}
               type="button"
               onClick={onClose}
-              className="flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+              className="w-full flex-1 px-4 py-2.5 text-sm font-medium text-gray-700 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
             >
               {cancelText}
             </button>
@@ -164,7 +164,7 @@ export function ConfirmationModal({
               ref={confirmButtonRef}
               type="button"
               onClick={handleConfirm}
-              className={`flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-colors focus:outline-none focus:ring-2 ${confirmButtonClasses}`}
+              className={`w-full flex-1 px-4 py-2.5 text-sm font-medium text-white rounded-lg transition-colors focus:outline-none focus:ring-2 ${confirmButtonClasses}`}
             >
               {confirmText}
             </button>

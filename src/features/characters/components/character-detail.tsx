@@ -151,10 +151,17 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
             </div>
           </div>
 
-          {/* Name */}
-          <h1 className="text-xl font-bold text-gray-800 tracking-tight mb-6">
-            {character.name}
-          </h1>
+          {/* Name and Delete Button */}
+          <div className="flex items-center justify-between mb-6 gap-4">
+            <h1 className="text-xl font-bold text-gray-800 tracking-tight">
+              {character.name}
+            </h1>
+            <DeleteButton
+              characterId={character.id}
+              characterName={character.name}
+              size="md"
+            />
+          </div>
 
           {/* Info sections with dividers */}
           <div>

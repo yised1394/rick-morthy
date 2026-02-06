@@ -1,27 +1,28 @@
 import type { SortOption } from '@/shared/constants/app.constants';
 
-/**
- * View type for character explorer.
- */
 export type ExplorerView = 'all' | 'favorites' | 'deleted';
 
-/**
- * Character type filter for list views.
- */
 export type CharacterTypeFilter = 'all' | 'starred' | 'others';
 
 /**
- * Species filter type (consolidated from multiple files).
+ * Species filter options for character filtering.
  */
 export type SpeciesType = 'all' | 'Human' | 'Alien';
 
 /**
- * Character type for filters (consolidated).
+ * Character type classification for filtering.
  */
 export type CharacterType = 'all' | 'starred' | 'others';
 
 /**
- * State for character filters in the UI.
+ * Character filter state for the UI.
+ * @property name - Character name search filter
+ * @property status - Character status filter (Alive, Dead, unknown)
+ * @property species - Species type filter
+ * @property gender - Gender filter
+ * @property page - Current page number
+ * @property sortBy - Sort option
+ * @property characterType - Character type classification
  */
 export interface CharacterFiltersState {
   readonly name: string;

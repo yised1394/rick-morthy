@@ -34,12 +34,12 @@ export function CharacterExplorer() {
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
 
-  const apiFilter: CharacterFilter = {
+  const apiFilter = useMemo<CharacterFilter>(() => ({
     name: filters.name || undefined,
     status: filters.status || undefined,
     species: filters.species || undefined,
     gender: filters.gender || undefined,
-  };
+  }), [filters.name, filters.status, filters.species, filters.gender]);
 
   const { data, loading, error, refetch } = useCharacters({
     page: filters.page,

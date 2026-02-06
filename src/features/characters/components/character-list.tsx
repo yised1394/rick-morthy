@@ -46,7 +46,7 @@ export function CharacterList() {
   }, [data?.characters.results, deletedCharacterIds, filters.sortBy]);
 
   if (loading && !data) {
-    return null; // Parent component shows skeleton
+    return null; 
   }
 
   if (error) {

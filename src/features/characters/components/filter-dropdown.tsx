@@ -8,6 +8,7 @@ interface FilterDropdownProps {
   readonly onApply: (filters: Partial<CharacterFiltersState>) => void;
 }
 
+
 function getSpeciesFromFilters(species: string): SpeciesType {
   if (species === 'Human') return 'Human';
   if (species === 'Alien') return 'Alien';

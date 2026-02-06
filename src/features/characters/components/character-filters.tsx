@@ -1,8 +1,7 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Input } from '@/shared/components/ui/input';
 import { Button } from '@/shared/components/ui/button';
 import { useDebounce } from '@/shared/hooks/use-debounce';
-import { useEffect } from 'react';
 import { CHARACTER_STATUS, CHARACTER_GENDER } from '@/shared/constants/app.constants';
 import type { CharacterFiltersState } from '../types/character-filter.types';
 
@@ -21,7 +20,8 @@ export function CharacterFilters({
   onReset,
 }: CharacterFiltersProps) {
   const [searchInput, setSearchInput] = useState(filters.name);
-  const debouncedSearch = useDebounce(searchInput, 300);
+  // Increased to 1200ms to prevent API rate limiting (429)
+  const debouncedSearch = useDebounce(searchInput, 1200);
 
   useEffect(() => {
     if (debouncedSearch !== filters.name) {

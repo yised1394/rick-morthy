@@ -1,5 +1,6 @@
 import type { CharacterBasic } from '../types/character.types';
 import { FavoriteButton } from '@/features/favorites/components/favorite-button';
+import { AsyncImage } from '@/shared/components/ui/async-image';
 
 interface CharacterListItemProps {
   readonly character: CharacterBasic;
@@ -40,11 +41,10 @@ export function CharacterListItem({
     >
       {/* Avatar */}
       <div className="relative flex-shrink-0">
-        <img
+        <AsyncImage
           src={character.image}
           alt={character.name}
           className="w-10 h-10 rounded-full object-cover"
-          loading="lazy"
         />
       </div>
 
