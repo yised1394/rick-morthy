@@ -1,15 +1,20 @@
-import { MainLayout } from '@/shared/components/layout/main-layout';
 import { CharacterExplorer } from '@/features/characters/components/character-explorer';
+import { OfflineIndicator } from '@/shared/components/pwa/offline-indicator';
+import { PWAUpdatePrompt } from '@/shared/components/pwa/pwa-update-prompt';
+import { InstallPrompt } from '@/shared/components/pwa/install-prompt';
 
 /**
  * Characters list page with search, filter, and pagination.
- * Uses the new Figma-based design with split layout on desktop.
+ * Clean layout without global header/footer — controls are integrated in the panel.
  */
 function CharactersPage() {
   return (
-    <MainLayout>
+    <div className="min-h-screen bg-white">
+      <OfflineIndicator />
       <CharacterExplorer />
-    </MainLayout>
+      <PWAUpdatePrompt />
+      <InstallPrompt />
+    </div>
   );
 }
 

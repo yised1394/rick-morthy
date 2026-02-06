@@ -19,15 +19,13 @@ import { getCharacterDetailRoute } from '@/core/config/routes.config';
 import { GET_CHARACTERS_BY_IDS } from '../services/character.queries';
 import type { CharacterFilter, CharacterBasic, GetCharactersByIdsQuery } from '../types/character.types';
 
-const VIEW_TITLES = { all: 'Rick and Morty list', favorites: 'Favorites', deleted: 'Deleted' } as const;
-
 /**
  * Main character explorer component with unified views.
  * Supports three views: all, favorites, deleted with view transitions.
  */
 export function CharacterExplorer() {
   const navigate = useNavigate();
-  const { view, setView } = useView();
+  const { view } = useView();
   const { filters, updateFilters, setPage } = useCharacterFilters();
   const { isFavorite, favorites } = useFavorites();
   const { deletedCharacterIds, deletedCount } = useSoftDeleteCharacters();
@@ -125,75 +123,56 @@ export function CharacterExplorer() {
     );
   }
 
-  const backButton = (
-    <button
-      type="button"
-      onClick={() => setView('all')}
-      className="p-1 -ml-1 rounded-lg hover:bg-gray-100 transition-colors text-gray-600"
-      aria-label="Back to character list"
-    >
-      <svg className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-      </svg>
-    </button>
-  );
-
   return (
     <div className="h-full">
       {/* Desktop Layout */}
-      <div className="hidden lg:flex h-[calc(100vh-200px)] gap-0">
+      <div className="hidden lg:flex h-screen gap-0">
         <div className="w-96 flex-shrink-0 border-r border-gray-100 flex flex-col" style={{ viewTransitionName: 'left-panel' }}>
-          {view !== 'all' && (
-            <div className="p-4 border-b border-gray-100">
-              <div className="flex items-center gap-2">
-                {backButton}
-                <h1 className="text-xl font-bold text-gray-800">{VIEW_TITLES[view]}</h1>
-              </div>
+          {/* CharacterListPanel always renders (contains pills for view switching) */}
+          <CharacterListPanel
+            starredCharacters={starredCharacters}
+            regularCharacters={regularCharacters}
+            totalResults={totalResults}
+            activeFiltersCount={activeFiltersCount}
+            searchValue={filters.name}
+            onSearchChange={handleSearchChange}
+            onFilterClick={() => setIsFilterOpen((prev) => !prev)}
+            isFilterOpen={isFilterOpen}
+            onFilterClose={() => setIsFilterOpen(false)}
+            filters={filters}
+            onFilterApply={updateFilters}
+            selectedCharacterId={selectedCharacterId}
+            onCharacterSelect={handleCharacterSelect}
+            currentPage={filters.page}
+            totalPages={data?.characters.info.pages ?? 1}
+            onPageChange={setPage}
+          />
+
+          {/* Favorites view content */}
+          {view === 'favorites' && (
+            <div className="flex-1 overflow-y-auto">
+              {loadingFavorites ? (
+                <div className="flex justify-center py-12"><LoadingSpinner /></div>
+              ) : favoriteCharacters.length === 0 ? (
+                <EmptyState title="No favorites yet" description="Start exploring characters and add some to your favorites!" />
+              ) : (
+                <div className="py-2">
+                  {favoriteCharacters.map((character) => (
+                    <CharacterListItem
+                      key={character.id}
+                      character={character}
+                      isSelected={selectedCharacterId === character.id}
+                      onClick={() => handleCharacterSelect(character)}
+                    />
+                  ))}
+                </div>
+              )}
             </div>
           )}
 
-          <div className="flex-1 overflow-y-auto">
-            {view === 'all' && (
-              <CharacterListPanel
-                starredCharacters={starredCharacters}
-                regularCharacters={regularCharacters}
-                totalResults={totalResults}
-                activeFiltersCount={activeFiltersCount}
-                searchValue={filters.name}
-                onSearchChange={handleSearchChange}
-                onFilterClick={() => setIsFilterOpen((prev) => !prev)}
-                isFilterOpen={isFilterOpen}
-                onFilterClose={() => setIsFilterOpen(false)}
-                filters={filters}
-                onFilterApply={updateFilters}
-                selectedCharacterId={selectedCharacterId}
-                onCharacterSelect={handleCharacterSelect}
-                currentPage={filters.page}
-                totalPages={data?.characters.info.pages ?? 1}
-                onPageChange={setPage}
-              />
-            )}
-            {view === 'favorites' && (
-              <>
-                {loadingFavorites ? (
-                  <div className="flex justify-center py-12"><LoadingSpinner /></div>
-                ) : favoriteCharacters.length === 0 ? (
-                  <EmptyState title="No favorites yet" description="Start exploring characters and add some to your favorites!" />
-                ) : (
-                  <div className="py-2">
-                    {favoriteCharacters.map((character) => (
-                      <CharacterListItem
-                        key={character.id}
-                        character={character}
-                        isSelected={selectedCharacterId === character.id}
-                        onClick={() => handleCharacterSelect(character)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </>
-            )}
-            {view === 'deleted' && (
+          {/* Deleted view content */}
+          {view === 'deleted' && (
+            <div className="flex-1 overflow-y-auto">
               <DeletedCharactersList
                 characters={deletedCharacters}
                 isLoading={isLoadingDeleted}
@@ -203,8 +182,8 @@ export function CharacterExplorer() {
                 onRestoreAll={handleRestoreAll}
                 deletedCount={deletedCount}
               />
-            )}
-          </div>
+            </div>
+          )}
         </div>
 
         <div className="flex-1 overflow-y-auto" style={{ viewTransitionName: 'right-panel' }}>
@@ -223,32 +202,27 @@ export function CharacterExplorer() {
 
       {/* Mobile Layout */}
       <div className="lg:hidden">
-        {view !== 'all' && (
-          <div className="flex items-center gap-2 p-4">
-            {backButton}
-            <h1 className="text-xl font-bold text-gray-800">{VIEW_TITLES[view]}</h1>
-          </div>
-        )}
-        {view === 'all' && (
-          <CharacterListPanel
-            starredCharacters={starredCharacters}
-            regularCharacters={regularCharacters}
-            totalResults={totalResults}
-            activeFiltersCount={activeFiltersCount}
-            searchValue={filters.name}
-            onSearchChange={handleSearchChange}
-            onFilterClick={() => setIsFilterOpen((prev) => !prev)}
-            isFilterOpen={isFilterOpen}
-            onFilterClose={() => setIsFilterOpen(false)}
-            filters={filters}
-            onFilterApply={updateFilters}
-            selectedCharacterId={null}
-            onCharacterSelect={handleMobileCharacterClick}
-            currentPage={filters.page}
-            totalPages={data?.characters.info.pages ?? 1}
-            onPageChange={setPage}
-          />
-        )}
+        {/* CharacterListPanel always renders (contains pills for view switching) */}
+        <CharacterListPanel
+          starredCharacters={starredCharacters}
+          regularCharacters={regularCharacters}
+          totalResults={totalResults}
+          activeFiltersCount={activeFiltersCount}
+          searchValue={filters.name}
+          onSearchChange={handleSearchChange}
+          onFilterClick={() => setIsFilterOpen((prev) => !prev)}
+          isFilterOpen={isFilterOpen}
+          onFilterClose={() => setIsFilterOpen(false)}
+          filters={filters}
+          onFilterApply={updateFilters}
+          selectedCharacterId={null}
+          onCharacterSelect={handleMobileCharacterClick}
+          currentPage={filters.page}
+          totalPages={data?.characters.info.pages ?? 1}
+          onPageChange={setPage}
+        />
+
+        {/* Favorites view content */}
         {view === 'favorites' && (
           loadingFavorites ? (
             <div className="flex justify-center py-12"><LoadingSpinner /></div>
@@ -266,6 +240,8 @@ export function CharacterExplorer() {
             </div>
           )
         )}
+
+        {/* Deleted view content */}
         {view === 'deleted' && (
           <DeletedCharactersList
             characters={deletedCharacters}

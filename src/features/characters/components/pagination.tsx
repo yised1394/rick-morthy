@@ -8,6 +8,7 @@ interface PaginationProps {
 
 /**
  * Pagination controls for character list.
+ * Compact layout: shows ±1 pages around current to prevent overflow.
  */
 export function Pagination({
   currentPage,
@@ -19,8 +20,8 @@ export function Pagination({
 
   const getVisiblePages = (): number[] => {
     const pages: number[] = [];
-    const start = Math.max(1, currentPage - 2);
-    const end = Math.min(totalPages, currentPage + 2);
+    const start = Math.max(1, currentPage - 1);
+    const end = Math.min(totalPages, currentPage + 1);
 
     for (let i = start; i <= end; i++) {
       pages.push(i);
@@ -33,7 +34,7 @@ export function Pagination({
 
   return (
     <nav
-      className="flex items-center justify-center gap-2"
+      className="flex items-center justify-center gap-1"
       aria-label="Pagination"
     >
       <Button
@@ -42,6 +43,7 @@ export function Pagination({
         onClick={() => onPageChange(currentPage - 1)}
         disabled={!hasPrevious}
         aria-label="Go to previous page"
+        className="!px-2"
       >
         <svg
           className="h-4 w-4"
@@ -59,7 +61,7 @@ export function Pagination({
         </svg>
       </Button>
 
-      <div className="flex items-center gap-1">
+      <div className="flex items-center gap-0.5">
         {visiblePages[0] !== undefined && visiblePages[0] > 1 && (
           <>
             <Button
@@ -68,11 +70,12 @@ export function Pagination({
               onClick={() => onPageChange(1)}
               aria-label="Go to page 1"
               aria-current={currentPage === 1 ? 'page' : undefined}
+              className="!px-2"
             >
               1
             </Button>
             {visiblePages[0] > 2 && (
-              <span className="px-2 text-neutral-500">...</span>
+              <span className="px-1 text-neutral-500">...</span>
             )}
           </>
         )}
@@ -85,6 +88,7 @@ export function Pagination({
             onClick={() => onPageChange(page)}
             aria-label={`Go to page ${page}`}
             aria-current={currentPage === page ? 'page' : undefined}
+            className="!px-2"
           >
             {page}
           </Button>
@@ -94,7 +98,7 @@ export function Pagination({
           visiblePages[visiblePages.length - 1]! < totalPages && (
             <>
               {visiblePages[visiblePages.length - 1]! < totalPages - 1 && (
-                <span className="px-2 text-neutral-500">...</span>
+                <span className="px-1 text-neutral-500">...</span>
               )}
               <Button
                 variant={currentPage === totalPages ? 'primary' : 'ghost'}
@@ -102,6 +106,7 @@ export function Pagination({
                 onClick={() => onPageChange(totalPages)}
                 aria-label={`Go to page ${totalPages}`}
                 aria-current={currentPage === totalPages ? 'page' : undefined}
+                className="!px-2"
               >
                 {totalPages}
               </Button>
@@ -115,6 +120,7 @@ export function Pagination({
         onClick={() => onPageChange(currentPage + 1)}
         disabled={!hasNext}
         aria-label="Go to next page"
+        className="!px-2"
       >
         <svg
           className="h-4 w-4"

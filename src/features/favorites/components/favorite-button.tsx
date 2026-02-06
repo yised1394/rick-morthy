@@ -46,7 +46,7 @@ export function FavoriteButton({
         onClick={handleClick}
         aria-label={isFav ? 'Remove from favorites' : 'Add to favorites'}
         aria-pressed={isFav}
-        className="p-1.5 rounded-full bg-white shadow-sm transition-all hover:scale-110 hover:shadow-md focus-visible:outline-none"
+        className="p-1.5 rounded-full bg-white transition-all hover:scale-110 hover:shadow-md focus-visible:outline-none"
       >
         <svg
           className={`${iconSizes[size]} transition-colors ${

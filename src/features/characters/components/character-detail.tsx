@@ -6,7 +6,6 @@ import { FavoriteButton } from "@/features/favorites/components/favorite-button"
 import { DeleteButton } from "@/features/soft-delete/components/delete-button";
 import { CommentSection } from "@/features/comments/components/comment-section";
 import { useSoftDeleteCharacters } from "@/features/soft-delete/hooks/use-soft-delete-characters";
-import { useFavorites } from "@/features/favorites/hooks/use-favorites";
 import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { ROUTES } from "@/core/config/routes.config";
 import { createCharacterId } from "@/core/types/global.types";
@@ -29,7 +28,6 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
   const { data, loading, error, refetch } = useCharacterById(id);
 
   const { isDeleted, restoreCharacter } = useSoftDeleteCharacters();
-  const { isFavorite } = useFavorites();
 
   const handleBack = () => {
     if (onBack) {
@@ -114,17 +112,16 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
   }
 
   const character = data.character;
-  const isFav = isFavorite(character.id);
 
   if (isMobile) {
     return (
       <div className="min-h-screen bg-white">
-        <div className="mx-auto max-w-[375px] px-4 pt-4 pb-8">
-          {/* Back button */}
+        {/* Back arrow container: 375px × 70px, 16px padding */}
+        <div className="mx-auto max-w-[375px] h-[70px] p-4 flex items-center">
           <button
             type="button"
             onClick={handleBack}
-            className="p-2.5 -ml-2.5 rounded-lg transition-all duration-150 active:scale-95 hover:bg-primary-100"
+            className="p-2.5 -ml-2.5 rounded-lg transition-all duration-150 active:scale-95 hover:bg-primary-100 text-primary-600"
             aria-label="Go back to character list"
           >
             <svg
@@ -143,6 +140,9 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
               />
             </svg>
           </button>
+        </div>
+
+        <div className="mx-auto max-w-[375px] px-4 pb-8">
 
           {/* Avatar with favorite badge */}
           <div className="flex items-start justify-start mt-10 mb-4">
@@ -153,23 +153,13 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
                 className="h-full w-full rounded-full object-cover"
               />
 
-              {isFav && (
-                <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-[3px] border-white bg-secondary-600">
-                  <svg
-                    className="h-3.5 w-3.5 fill-white"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    strokeWidth={2}
-                    aria-hidden="true"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"
-                    />
-                  </svg>
-                </div>
-              )}
+              <div className="absolute -bottom-1 -right-1">
+                <FavoriteButton
+                  characterId={character.id}
+                  size="sm"
+                  variant="minimal"
+                />
+              </div>
             </div>
           </div>
 
