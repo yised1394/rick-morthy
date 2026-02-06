@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { createPortal } from 'react-dom';
 import type { CharacterFiltersState, CharacterTypeFilter, SpeciesType } from '../types/character-filter.types';
+import type { CharacterStatus, CharacterGender } from '../types/character.types';
 
 interface FilterMobileSheetProps {
   readonly isOpen: boolean;
@@ -28,14 +29,18 @@ export function FilterMobileSheet({
 }: FilterMobileSheetProps) {
   const [characterType, setCharacterType] = useState<CharacterTypeFilter>('all');
   const [speciesFilter, setSpeciesFilter] = useState<SpeciesType>('all');
+  const [statusFilter, setStatusFilter] = useState<CharacterStatus | 'all'>('all');
+  const [genderFilter, setGenderFilter] = useState<CharacterGender | 'all'>('all');
 
   // Sync local state when the sheet opens
   useEffect(() => {
     if (isOpen) {
       setCharacterType(filters.characterType || 'all');
       setSpeciesFilter(getSpeciesFromFilters(filters.species));
+      setStatusFilter((filters.status as CharacterStatus) || 'all');
+      setGenderFilter((filters.gender as CharacterGender) || 'all');
     }
-  }, [isOpen, filters.characterType, filters.species]);
+  }, [isOpen, filters]);
 
   // Lock body scroll while open
   useEffect(() => {
@@ -56,12 +61,18 @@ export function FilterMobileSheet({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [isOpen, onClose]);
 
-  const isButtonDisabled = characterType === 'all' && speciesFilter === 'all';
+  const isButtonDisabled = 
+    characterType === 'all' && 
+    speciesFilter === 'all' && 
+    statusFilter === 'all' && 
+    genderFilter === 'all';
 
   const handleApply = () => {
     if (isButtonDisabled) return;
     onApply({
       species: speciesFilter === 'all' ? '' : speciesFilter,
+      status: statusFilter === 'all' ? '' : statusFilter,
+      gender: genderFilter === 'all' ? '' : genderFilter,
       characterType,
     });
     onClose();
@@ -138,9 +149,36 @@ export function FilterMobileSheet({
                 </div>
               </div>
 
+              {/* Status section */}
+              <div>
+                <h3 className="text-base font-medium text-gray-500 mb-3">Status</h3>
+                <div className="flex gap-3 flex-wrap">
+                  <MobileFilterChip
+                    label="All"
+                    isActive={statusFilter === 'all'}
+                    onClick={() => setStatusFilter('all')}
+                  />
+                  <MobileFilterChip
+                    label="Alive"
+                    isActive={statusFilter === 'Alive'}
+                    onClick={() => setStatusFilter('Alive')}
+                  />
+                  <MobileFilterChip
+                    label="Dead"
+                    isActive={statusFilter === 'Dead'}
+                    onClick={() => setStatusFilter('Dead')}
+                  />
+                  <MobileFilterChip
+                    label="Unknown"
+                    isActive={statusFilter === 'unknown'}
+                    onClick={() => setStatusFilter('unknown')}
+                  />
+                </div>
+              </div>
+
               {/* Species section */}
               <div>
-                <h3 className="text-base font-medium text-gray-500 mb-3">Specie</h3>
+                <h3 className="text-base font-medium text-gray-500 mb-3">Species</h3>
                 <div className="flex gap-3 flex-wrap">
                   <MobileFilterChip
                     label="All"
@@ -156,6 +194,38 @@ export function FilterMobileSheet({
                     label="Alien"
                     isActive={speciesFilter === 'Alien'}
                     onClick={() => setSpeciesFilter('Alien')}
+                  />
+                </div>
+              </div>
+
+              {/* Gender section */}
+              <div>
+                <h3 className="text-base font-medium text-gray-500 mb-3">Gender</h3>
+                <div className="flex gap-3 flex-wrap">
+                  <MobileFilterChip
+                    label="All"
+                    isActive={genderFilter === 'all'}
+                    onClick={() => setGenderFilter('all')}
+                  />
+                  <MobileFilterChip
+                    label="Female"
+                    isActive={genderFilter === 'Female'}
+                    onClick={() => setGenderFilter('Female')}
+                  />
+                  <MobileFilterChip
+                    label="Male"
+                    isActive={genderFilter === 'Male'}
+                    onClick={() => setGenderFilter('Male')}
+                  />
+                  <MobileFilterChip
+                    label="Genderless"
+                    isActive={genderFilter === 'Genderless'}
+                    onClick={() => setGenderFilter('Genderless')}
+                  />
+                  <MobileFilterChip
+                    label="Unknown"
+                    isActive={genderFilter === 'unknown'}
+                    onClick={() => setGenderFilter('unknown')}
                   />
                 </div>
               </div>

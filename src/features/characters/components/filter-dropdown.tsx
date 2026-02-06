@@ -1,5 +1,6 @@
-import { useState, useEffect,useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import type { CharacterFiltersState, CharacterTypeFilter, SpeciesType } from '../types/character-filter.types';
+import type { CharacterStatus, CharacterGender } from '../types/character.types';
 
 interface FilterDropdownProps {
   readonly isOpen: boolean;
@@ -7,7 +8,6 @@ interface FilterDropdownProps {
   readonly filters: CharacterFiltersState;
   readonly onApply: (filters: Partial<CharacterFiltersState>) => void;
 }
-
 
 function getSpeciesFromFilters(species: string): SpeciesType {
   if (species === 'Human') return 'Human';
@@ -28,6 +28,9 @@ export function FilterDropdown({
 }: FilterDropdownProps) {
   const [characterType, setCharacterType] = useState<CharacterTypeFilter>('all');
   const [speciesFilter, setSpeciesFilter] = useState<SpeciesType>('all');
+  const [statusFilter, setStatusFilter] = useState<CharacterStatus | 'all'>('all');
+  const [genderFilter, setGenderFilter] = useState<CharacterGender | 'all'>('all');
+  
   const prevIsOpenRef = useRef(false);
 
   // Sync local state ONLY when the dropdown transitions from closed → open
@@ -35,17 +38,25 @@ export function FilterDropdown({
     if (isOpen && !prevIsOpenRef.current) {
       setCharacterType(filters.characterType || 'all');
       setSpeciesFilter(getSpeciesFromFilters(filters.species));
+      setStatusFilter((filters.status as CharacterStatus) || 'all');
+      setGenderFilter((filters.gender as CharacterGender) || 'all');
     }
     prevIsOpenRef.current = isOpen;
-  }, [isOpen, filters.characterType, filters.species]);
+  }, [isOpen, filters]);
 
-  // Button is disabled when both filters are 'All'
-  const isButtonDisabled = characterType === 'all' && speciesFilter === 'all';
+  // Button is disabled when all filters are 'All'
+  const isButtonDisabled = 
+    characterType === 'all' && 
+    speciesFilter === 'all' && 
+    statusFilter === 'all' && 
+    genderFilter === 'all';
 
   const handleApply = () => {
     if (isButtonDisabled) return;
     onApply({
       species: speciesFilter === 'all' ? '' : speciesFilter,
+      status: statusFilter === 'all' ? '' : statusFilter,
+      gender: genderFilter === 'all' ? '' : genderFilter,
       characterType: characterType,
     });
     onClose();
@@ -55,7 +66,7 @@ export function FilterDropdown({
 
   return (
     <div
-      className="absolute left-0 top-full mt-2 z-50 w-full h-[278px] bg-white rounded-[6px] shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-5 animate-dropdown-in"
+      className="absolute left-0 top-full mt-2 z-50 w-full min-w-[300px] h-auto max-h-[600px] overflow-y-auto bg-white rounded-[6px] shadow-[0_4px_12px_rgba(0,0,0,0.1)] p-5 animate-dropdown-in"
       role="dialog"
       aria-label="Filter options"
     >
@@ -81,9 +92,36 @@ export function FilterDropdown({
         </div>
       </div>
 
+      {/* Status Filter */}
+      <div className="mb-5">
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">Status</h3>
+        <div className="flex flex-wrap gap-2">
+          <FilterChip
+            label="All"
+            isActive={statusFilter === 'all'}
+            onClick={() => setStatusFilter('all')}
+          />
+          <FilterChip
+            label="Alive"
+            isActive={statusFilter === 'Alive'}
+            onClick={() => setStatusFilter('Alive')}
+          />
+          <FilterChip
+            label="Dead"
+            isActive={statusFilter === 'Dead'}
+            onClick={() => setStatusFilter('Dead')}
+          />
+          <FilterChip
+            label="Unknown"
+            isActive={statusFilter === 'unknown'}
+            onClick={() => setStatusFilter('unknown')}
+          />
+        </div>
+      </div>
+
       {/* Species filter */}
       <div className="mb-5">
-        <h3 className="text-sm font-semibold text-gray-700 mb-2">Specie</h3>
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">Species</h3>
         <div className="flex flex-wrap gap-2">
           <FilterChip
             label="All"
@@ -99,6 +137,38 @@ export function FilterDropdown({
             label="Alien"
             isActive={speciesFilter === 'Alien'}
             onClick={() => setSpeciesFilter('Alien')}
+          />
+        </div>
+      </div>
+
+      {/* Gender Filter */}
+      <div className="mb-5">
+        <h3 className="text-sm font-semibold text-gray-700 mb-2">Gender</h3>
+        <div className="flex flex-wrap gap-2">
+          <FilterChip
+            label="All"
+            isActive={genderFilter === 'all'}
+            onClick={() => setGenderFilter('all')}
+          />
+          <FilterChip
+            label="Female"
+            isActive={genderFilter === 'Female'}
+            onClick={() => setGenderFilter('Female')}
+          />
+          <FilterChip
+            label="Male"
+            isActive={genderFilter === 'Male'}
+            onClick={() => setGenderFilter('Male')}
+          />
+          <FilterChip
+            label="Genderless"
+            isActive={genderFilter === 'Genderless'}
+            onClick={() => setGenderFilter('Genderless')}
+          />
+          <FilterChip
+            label="Unknown"
+            isActive={genderFilter === 'unknown'}
+            onClick={() => setGenderFilter('unknown')}
           />
         </div>
       </div>

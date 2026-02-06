@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { ChevronIcon } from '@/shared/components/icons/chevron-icon';
-import type { CharacterFiltersState, CharacterType, SpeciesType } from '../types/character-filter.types';
+import type { CharacterFiltersState, CharacterTypeFilter, SpeciesType } from '../types/character-filter.types';
+import type { CharacterStatus, CharacterGender } from '../types/character.types';
 
 interface FilterModalProps {
   readonly isOpen: boolean;
@@ -9,9 +10,15 @@ interface FilterModalProps {
   readonly onApply: (filters: Partial<CharacterFiltersState>) => void;
 }
 
+function getSpeciesFromFilters(species: string): SpeciesType {
+  if (species === 'Human') return 'Human';
+  if (species === 'Alien') return 'Alien';
+  return 'all';
+}
+
 /**
- * Filter modal/page with chip-style selectors (Figma design).
- * Supports character type, species filtering.
+ * Filter modal/page with chip-style selectors.
+ * Supports character type, species, status, and gender filtering.
  */
 export function FilterModal({
   isOpen,
@@ -19,26 +26,36 @@ export function FilterModal({
   filters,
   onApply,
 }: FilterModalProps) {
-  const [characterType, setCharacterType] = useState<CharacterType>('all');
+  const [characterType, setCharacterType] = useState<CharacterTypeFilter>('all');
   const [speciesFilter, setSpeciesFilter] = useState<SpeciesType>('all');
+  const [statusFilter, setStatusFilter] = useState<CharacterStatus | 'all'>('all');
+  const [genderFilter, setGenderFilter] = useState<CharacterGender | 'all'>('all');
 
   // Sync with external filters
   useEffect(() => {
-    if (filters.species === 'Human') {
-      setSpeciesFilter('Human');
-    } else if (filters.species === 'Alien') {
-      setSpeciesFilter('Alien');
-    } else {
-      setSpeciesFilter('all');
+    if (isOpen) {
+      setCharacterType(filters.characterType || 'all');
+      setSpeciesFilter(getSpeciesFromFilters(filters.species));
+      setStatusFilter((filters.status as CharacterStatus) || 'all');
+      setGenderFilter((filters.gender as CharacterGender) || 'all');
     }
-  }, [filters.species]);
+  }, [isOpen, filters]);
 
   const handleApply = () => {
-    const newFilters: Partial<CharacterFiltersState> = {
+    onApply({
       species: speciesFilter === 'all' ? '' : speciesFilter,
-    };
-    onApply(newFilters);
+      status: statusFilter === 'all' ? '' : statusFilter,
+      gender: genderFilter === 'all' ? '' : genderFilter,
+      characterType: characterType,
+    });
     onClose();
+  };
+
+  const handleClear = () => {
+    setCharacterType('all');
+    setSpeciesFilter('all');
+    setStatusFilter('all');
+    setGenderFilter('all');
   };
 
   if (!isOpen) return null;
@@ -53,9 +70,9 @@ export function FilterModal({
       />
 
       {/* Modal content */}
-      <div className="relative bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl shadow-xl animate-slide-in">
+      <div className="relative bg-white w-full sm:max-w-md sm:rounded-xl rounded-t-xl shadow-xl animate-slide-in max-h-[90vh] flex flex-col">
         {/* Header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 flex-shrink-0">
           <button
             type="button"
             onClick={onClose}
@@ -65,11 +82,17 @@ export function FilterModal({
             <ChevronIcon direction="left" size={20} />
           </button>
           <h2 className="text-lg font-semibold text-gray-800">Filters</h2>
-          <div className="w-5" /> {/* Spacer for centering */}
+          <button 
+            type="button"
+            onClick={handleClear}
+            className="text-sm font-medium text-gray-500 hover:text-primary-600"
+          >
+            Clear
+          </button>
         </div>
 
-        {/* Filter sections */}
-        <div className="px-6 py-6 space-y-6">
+        {/* Filter sections - Scrollable */}
+        <div className="px-6 py-6 space-y-6 overflow-y-auto flex-1">
           {/* Characters filter */}
           <div>
             <h3 className="text-sm font-medium text-gray-700 mb-3">Characters</h3>
@@ -92,9 +115,36 @@ export function FilterModal({
             </div>
           </div>
 
+          {/* Status filter */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-700 mb-3">Status</h3>
+            <div className="flex flex-wrap gap-2">
+              <FilterChip
+                label="All"
+                isActive={statusFilter === 'all'}
+                onClick={() => setStatusFilter('all')}
+              />
+              <FilterChip
+                label="Alive"
+                isActive={statusFilter === 'Alive'}
+                onClick={() => setStatusFilter('Alive')}
+              />
+              <FilterChip
+                label="Dead"
+                isActive={statusFilter === 'Dead'}
+                onClick={() => setStatusFilter('Dead')}
+              />
+              <FilterChip
+                label="Unknown"
+                isActive={statusFilter === 'unknown'}
+                onClick={() => setStatusFilter('unknown')}
+              />
+            </div>
+          </div>
+
           {/* Species filter */}
           <div>
-            <h3 className="text-sm font-medium text-gray-700 mb-3">Specie</h3>
+            <h3 className="text-sm font-medium text-gray-700 mb-3">Species</h3>
             <div className="flex flex-wrap gap-2">
               <FilterChip
                 label="All"
@@ -113,14 +163,46 @@ export function FilterModal({
               />
             </div>
           </div>
+
+          {/* Gender filter */}
+          <div>
+            <h3 className="text-sm font-medium text-gray-700 mb-3">Gender</h3>
+            <div className="flex flex-wrap gap-2">
+              <FilterChip
+                label="All"
+                isActive={genderFilter === 'all'}
+                onClick={() => setGenderFilter('all')}
+              />
+              <FilterChip
+                label="Female"
+                isActive={genderFilter === 'Female'}
+                onClick={() => setGenderFilter('Female')}
+              />
+              <FilterChip
+                label="Male"
+                isActive={genderFilter === 'Male'}
+                onClick={() => setGenderFilter('Male')}
+              />
+              <FilterChip
+                label="Genderless"
+                isActive={genderFilter === 'Genderless'}
+                onClick={() => setGenderFilter('Genderless')}
+              />
+              <FilterChip
+                label="Unknown"
+                isActive={genderFilter === 'unknown'}
+                onClick={() => setGenderFilter('unknown')}
+              />
+            </div>
+          </div>
         </div>
 
         {/* Footer with apply button */}
-        <div className="px-6 pb-6 pt-2">
+        <div className="px-6 pb-6 pt-2 flex-shrink-0 border-t border-gray-100 bg-white">
           <button
             type="button"
             onClick={handleApply}
-            className="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors"
+            className="w-full py-3 px-4 bg-primary-600 hover:bg-primary-700 text-white font-medium rounded-lg transition-colors mt-4"
           >
             Filter
           </button>

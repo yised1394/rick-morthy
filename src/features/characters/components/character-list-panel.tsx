@@ -136,7 +136,12 @@ export function CharacterListPanel({
               {activeFiltersCount > 0 && (
                 <button
                   type="button"
-                  onClick={() => onFilterApply({ characterType: 'all', species: '' })}
+                  onClick={() => onFilterApply({ 
+                    characterType: 'all', 
+                    species: '',
+                    status: '',
+                    gender: ''
+                  })}
                   className="flex items-center gap-1 px-3 py-1 text-xs font-medium bg-[#63D83833] text-[#3B8520] rounded-full transition-all hover:bg-[#63D83855] active:scale-95"
                   aria-label="Clear all filters"
                 >
