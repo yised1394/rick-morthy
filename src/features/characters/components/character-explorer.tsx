@@ -28,7 +28,7 @@ const VIEW_TITLES = { all: 'Rick and Morty list', favorites: 'Favorites', delete
 export function CharacterExplorer() {
   const navigate = useNavigate();
   const { view, setView } = useView();
-  const { filters, updateFilters } = useCharacterFilters();
+  const { filters, updateFilters, setPage } = useCharacterFilters();
   const { isFavorite, favorites } = useFavorites();
   const { deletedCharacterIds, deletedCount } = useSoftDeleteCharacters();
   const [selectedCharacterId, setSelectedCharacterId] = useState<string | null>(null);
@@ -168,6 +168,9 @@ export function CharacterExplorer() {
                 onFilterApply={updateFilters}
                 selectedCharacterId={selectedCharacterId}
                 onCharacterSelect={handleCharacterSelect}
+                currentPage={filters.page}
+                totalPages={data?.characters.info.pages ?? 1}
+                onPageChange={setPage}
               />
             )}
             {view === 'favorites' && (
@@ -241,6 +244,9 @@ export function CharacterExplorer() {
             onFilterApply={updateFilters}
             selectedCharacterId={null}
             onCharacterSelect={handleMobileCharacterClick}
+            currentPage={filters.page}
+            totalPages={data?.characters.info.pages ?? 1}
+            onPageChange={setPage}
           />
         )}
         {view === 'favorites' && (

@@ -1,16 +1,16 @@
-import { useParams, useNavigate } from 'react-router-dom';
-import { useCharacterById } from '../hooks/use-character-by-id';
-import { LoadingSpinner } from '@/shared/components/ui/loading-spinner';
-import { ErrorMessage } from '@/shared/components/ui/error-message';
-import { FavoriteButton } from '@/features/favorites/components/favorite-button';
-import { DeleteButton } from '@/features/soft-delete/components/delete-button';
-import { CommentSection } from '@/features/comments/components/comment-section';
-import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
-import { useFavorites } from '@/features/favorites/hooks/use-favorites';
-import { useMediaQuery } from '@/shared/hooks/use-media-query';
-import { ROUTES } from '@/core/config/routes.config';
-import { createCharacterId } from '@/core/types/global.types';
-import type { Character } from '../types/character.types';
+import { useParams, useNavigate } from "react-router-dom";
+import { useCharacterById } from "../hooks/use-character-by-id";
+import { LoadingSpinner } from "@/shared/components/ui/loading-spinner";
+import { ErrorMessage } from "@/shared/components/ui/error-message";
+import { FavoriteButton } from "@/features/favorites/components/favorite-button";
+import { DeleteButton } from "@/features/soft-delete/components/delete-button";
+import { CommentSection } from "@/features/comments/components/comment-section";
+import { useSoftDeleteCharacters } from "@/features/soft-delete/hooks/use-soft-delete-characters";
+import { useFavorites } from "@/features/favorites/hooks/use-favorites";
+import { useMediaQuery } from "@/shared/hooks/use-media-query";
+import { ROUTES } from "@/core/config/routes.config";
+import { createCharacterId } from "@/core/types/global.types";
+import type { Character } from "../types/character.types";
 
 interface CharacterDetailProps {
   readonly characterId?: string;
@@ -24,8 +24,8 @@ interface CharacterDetailProps {
 export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
   const { id: routeId } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const isMobile = useMediaQuery('(max-width: 1023px)');
-  const id = characterId ?? routeId ?? '';
+  const isMobile = useMediaQuery("(max-width: 1023px)");
+  const id = characterId ?? routeId ?? "";
   const { data, loading, error, refetch } = useCharacterById(id);
 
   const { isDeleted, restoreCharacter } = useSoftDeleteCharacters();
@@ -62,7 +62,8 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
           Character Deleted
         </h2>
         <p className="text-gray-500 mb-6 max-w-md">
-          This character has been removed from your list. You can restore it to view details again.
+          This character has been removed from your list. You can restore it to
+          view details again.
         </p>
         <div className="flex gap-3">
           <button
@@ -142,17 +143,18 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
           </button>
 
           {/* Avatar with favorite badge */}
-          <div className="mt-10 mb-4">
-            <div className="relative mx-auto w-[100px] h-[100px]">
+          <div className="flex items-start justify-start mt-10 mb-4">
+            <div className="relative w-[100px] h-[100px]">
               <img
                 src={character.image}
                 alt={character.name}
-                className="w-full h-full rounded-full object-cover"
+                className="h-full w-full rounded-full object-cover"
               />
+
               {isFav && (
                 <div className="absolute -bottom-1 -right-1 flex h-7 w-7 items-center justify-center rounded-full border-[3px] border-white bg-secondary-600">
                   <svg
-                    className="h-3.5 w-3.5 fill-white text-white"
+                    className="h-3.5 w-3.5 fill-white"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
                     strokeWidth={2}
@@ -176,11 +178,23 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
 
           {/* Info sections with dividers */}
           <div>
-            <MobileInfoSection label="Specie" value={character.species} className="pb-5" />
+            <MobileInfoSection
+              label="Specie"
+              value={character.species}
+              className="pb-5"
+            />
             <div className="h-px w-full bg-gray-200" />
-            <MobileInfoSection label="Status" value={character.status} className="py-5" />
+            <MobileInfoSection
+              label="Status"
+              value={character.status}
+              className="py-5"
+            />
             <div className="h-px w-full bg-gray-200" />
-            <MobileInfoSection label="Occupation" value={character.type || 'Unknown'} className="pt-5 pb-10" />
+            <MobileInfoSection
+              label="Occupation"
+              value={character.type || "Unknown"}
+              className="pt-5 pb-10"
+            />
           </div>
 
           {/* Comments section */}
@@ -214,9 +228,7 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
 
         {/* Name and Delete button */}
         <div className="flex items-center justify-between gap-4">
-          <h1 className="text-2xl font-bold text-gray-800">
-            {character.name}
-          </h1>
+          <h1 className="text-2xl font-bold text-gray-800">{character.name}</h1>
           <DeleteButton
             characterId={character.id}
             characterName={character.name}
@@ -228,7 +240,10 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
         <div className="space-y-4">
           <CharacterInfoRow label="Specie" value={character.species} />
           <CharacterInfoRow label="Status" value={character.status} />
-          <CharacterInfoRow label="Occupation" value={character.type || 'Unknown'} />
+          <CharacterInfoRow
+            label="Occupation"
+            value={character.type || "Unknown"}
+          />
         </div>
       </div>
 
@@ -251,10 +266,16 @@ interface MobileInfoSectionProps {
   readonly className?: string;
 }
 
-function MobileInfoSection({ label, value, className = '' }: MobileInfoSectionProps) {
+function MobileInfoSection({
+  label,
+  value,
+  className = "",
+}: MobileInfoSectionProps) {
   return (
     <div className={className}>
-      <dt className="text-base font-bold text-gray-800 tracking-tight mb-1.5">{label}</dt>
+      <dt className="text-base font-bold text-gray-800 tracking-tight mb-1.5">
+        {label}
+      </dt>
       <dd className="text-[15px] text-gray-500">{value}</dd>
     </div>
   );
@@ -272,7 +293,11 @@ function CharacterInfoRow({ label, value }: CharacterInfoRowProps) {
 /**
  * Compact version of character detail for use in split layouts.
  */
-export function CharacterDetailCompact({ character }: { readonly character: Character }) {
+export function CharacterDetailCompact({
+  character,
+}: {
+  readonly character: Character;
+}) {
   return (
     <div className="p-6">
       {/* Avatar with favorite indicator */}
@@ -292,15 +317,16 @@ export function CharacterDetailCompact({ character }: { readonly character: Char
       </div>
 
       {/* Name */}
-      <h2 className="text-xl font-bold text-gray-800 mb-6">
-        {character.name}
-      </h2>
+      <h2 className="text-xl font-bold text-gray-800 mb-6">{character.name}</h2>
 
       {/* Info sections */}
       <div className="space-y-4">
         <CharacterInfoRow label="Specie" value={character.species} />
         <CharacterInfoRow label="Status" value={character.status} />
-        <CharacterInfoRow label="Occupation" value={character.type || 'Unknown'} />
+        <CharacterInfoRow
+          label="Occupation"
+          value={character.type || "Unknown"}
+        />
       </div>
     </div>
   );
