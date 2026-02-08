@@ -11,7 +11,8 @@
       "Bash(tree:*)",
       "Bash(npx vite build)",
       "Bash(npx vite:*)",
-      "Bash(python -c:*)"
+      "Bash(python -c:*)",
+      "Bash(find:*)"
     ]
   }
 }
