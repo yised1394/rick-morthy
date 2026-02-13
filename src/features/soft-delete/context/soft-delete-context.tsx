@@ -1,15 +1,13 @@
 import {
   createContext,
   useContext,
-  useState,
   useCallback,
-  useEffect,
   type ReactNode,
 } from 'react';
 import type { CharacterId } from '@/core/types/global.types';
-import { createCharacterId } from '@/core/types/global.types';
 import type { SoftDeleteContextValue } from '../types/soft-delete.types';
 import { STORAGE_KEYS } from '@/shared/constants/app.constants';
+import { useLocalStorageSet } from '@/shared/hooks/use-local-storage-set';
 
 const SoftDeleteContext = createContext<SoftDeleteContextValue | null>(null);
 
@@ -33,40 +31,7 @@ interface SoftDeleteProviderProps {
  * ```
  */
 export function SoftDeleteProvider({ children }: SoftDeleteProviderProps) {
-  const [deletedIds, setDeletedIds] = useState<Set<CharacterId>>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.DELETED_CHARACTERS);
-      const parsed = stored ? (JSON.parse(stored) as string[]) : [];
-      return new Set(parsed.map(createCharacterId));
-    } catch {
-      return new Set();
-    }
-  });
-
-  // Persist to localStorage on change
-  useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEYS.DELETED_CHARACTERS,
-      JSON.stringify([...deletedIds])
-    );
-  }, [deletedIds]);
-
-  // Sync across browser tabs
-  useEffect(() => {
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEYS.DELETED_CHARACTERS && event.newValue) {
-        try {
-          const parsed = JSON.parse(event.newValue) as string[];
-          setDeletedIds(new Set(parsed.map(createCharacterId)));
-        } catch {
-          // Ignore parse errors from other tabs
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  const [deletedIds, setDeletedIds] = useLocalStorageSet(STORAGE_KEYS.DELETED_CHARACTERS);
 
   /**
    * Marks a character as soft deleted.

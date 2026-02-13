@@ -9,7 +9,8 @@ import { useMediaQuery } from "@/shared/hooks/use-media-query";
 import { ROUTES } from "@/core/config/routes.config";
 import { createCharacterId } from "@/core/types/global.types";
 import { ChevronIcon } from "@/shared/components/icons/chevron-icon";
-import type { Character } from "../types/character.types";
+import { CharacterInfoRow } from "./character-info-row";
+import { MobileInfoSection } from "./mobile-info-section";
 
 interface CharacterDetailProps {
   readonly characterId?: string;
@@ -242,79 +243,6 @@ export function CharacterDetail({ characterId, onBack }: CharacterDetailProps) {
   );
 }
 
-interface CharacterInfoRowProps {
-  readonly label: string;
-  readonly value: string;
-}
 
-interface MobileInfoSectionProps {
-  readonly label: string;
-  readonly value: string;
-  readonly className?: string;
-}
 
-function MobileInfoSection({
-  label,
-  value,
-  className = "",
-}: MobileInfoSectionProps) {
-  return (
-    <div className={className}>
-      <dt className="text-base font-bold text-gray-800 tracking-tight mb-1.5">
-        {label}
-      </dt>
-      <dd className="text-[15px] text-gray-500">{value}</dd>
-    </div>
-  );
-}
 
-function CharacterInfoRow({ label, value }: CharacterInfoRowProps) {
-  return (
-    <div className="border-b border-gray-100 pb-4">
-      <dt className="text-sm font-semibold text-gray-800 mb-1">{label}</dt>
-      <dd className="text-sm text-gray-500">{value}</dd>
-    </div>
-  );
-}
-
-/**
- * Compact version of character detail for use in split layouts.
- */
-export function CharacterDetailCompact({
-  character,
-}: {
-  readonly character: Character;
-}) {
-  return (
-    <div className="p-6">
-      {/* Avatar with favorite indicator */}
-      <div className="relative inline-block mb-4">
-        <img
-          src={character.image}
-          alt={character.name}
-          className="w-20 h-20 rounded-full object-cover"
-        />
-        <div className="absolute -bottom-1 -right-1">
-          <FavoriteButton
-            characterId={character.id}
-            size="sm"
-            variant="minimal"
-          />
-        </div>
-      </div>
-
-      {/* Name */}
-      <h2 className="text-xl font-bold text-gray-800 mb-6">{character.name}</h2>
-
-      {/* Info sections */}
-      <div className="space-y-4">
-        <CharacterInfoRow label="Specie" value={character.species} />
-        <CharacterInfoRow label="Status" value={character.status} />
-        <CharacterInfoRow
-          label="Occupation"
-          value={character.type || "Unknown"}
-        />
-      </div>
-    </div>
-  );
-}

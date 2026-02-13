@@ -10,6 +10,9 @@ import { useView } from '../context/view-context';
 import { useFavorites } from '@/features/favorites/hooks/use-favorites';
 import { useSoftDeleteCharacters } from '@/features/soft-delete/hooks/use-soft-delete-characters';
 import { CloseIcon } from '@/shared/components/icons/close-icon';
+import { ViewPill } from './view-pill';
+import { SortButton } from './sort-button';
+import { ListFooter } from './list-footer';
 import type { CharacterFiltersState } from '../types/character-filter.types';
 import type { CharacterBasic } from '../types/character.types';
 
@@ -215,99 +218,3 @@ export function CharacterListPanel({
   );
 }
 
-/* ── View pill ────────────────────────────────────────── */
-
-interface ViewPillProps {
-  readonly label: string;
-  readonly count?: number;
-  readonly active: boolean;
-  readonly onClick: () => void;
-}
-
-function ViewPill({ label, count, active, onClick }: ViewPillProps) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`
-        px-3.5 py-1.5 rounded-full text-sm font-medium
-        transition-all duration-200 border
-        ${active
-          ? 'bg-purple-50 text-purple-600 border-purple-200'
-          : 'bg-white text-gray-600 border-gray-200 hover:bg-gray-50 hover:border-gray-300'
-        }
-      `}
-    >
-      {label}
-      {count !== undefined && count > 0 && (
-        <span
-          className={`
-            ml-1.5 px-1.5 py-0.5 rounded-md text-xs font-semibold
-            ${active ? 'bg-purple-100 text-purple-600' : 'bg-gray-100 text-gray-500'}
-          `}
-        >
-          {count}
-        </span>
-      )}
-    </button>
-  );
-}
-
-/* ── Sort button ──────────────────────────────────────── */
-
-import type { SortOption } from '@/shared/constants/app.constants';
-
-interface SortButtonProps {
-  readonly sortBy: SortOption | '';
-  readonly onToggle: () => void;
-}
-
-function SortButton({ sortBy, onToggle }: SortButtonProps) {
-  const label = !sortBy ? 'Sort' : sortBy === SORT_OPTIONS.NAME_ASC ? 'A-Z' : 'Z-A';
-
-  return (
-    <button
-      type="button"
-      onClick={onToggle}
-      className={`
-        flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-medium transition-all
-        ${sortBy
-          ? 'bg-primary-100 text-primary-600'
-          : 'text-gray-500 hover:bg-gray-100'
-        }
-      `}
-      aria-label={`Sort by name: ${label}`}
-    >
-      <svg
-        className="h-3.5 w-3.5"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
-        aria-hidden="true"
-      >
-        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4h13M3 8h9m-9 4h6m4 0l4-4m0 0l4 4m-4-4v12" />
-      </svg>
-      {label}
-    </button>
-  );
-}
-
-/* ── Inline footer ────────────────────────────────────── */
-
-function ListFooter() {
-  return (
-    <footer className="mt-10 pt-6 pb-4 border-t border-gray-100 text-center">
-      <p className="text-[13px] text-gray-400 leading-relaxed">
-        Data from{' '}
-        <a
-          href="https://rickandmortyapi.com"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-purple-600 hover:underline transition-colors"
-        >
-          Rick and Morty API
-        </a>
-      </p>
-    </footer>
-  );
-}

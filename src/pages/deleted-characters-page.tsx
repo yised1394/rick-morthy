@@ -9,6 +9,9 @@ import { DeletedSkeleton } from '@/features/characters/components/deleted-skelet
 import { ROUTES } from '@/core/config/routes.config';
 import type { CharacterId } from '@/core/types/global.types';
 import type { DeletedCharacter } from '@/features/characters/types/character.types';
+import { ChevronIcon } from '@/shared/components/icons/chevron-icon';
+import { RestoreIcon } from '@/shared/components/icons/restore-icon';
+import { TrashIcon } from '@/shared/components/icons/trash-icon';
 
 /**
  * Page for viewing and restoring deleted characters.
@@ -118,19 +121,7 @@ function DeletedCharactersPage() {
                 className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
                 aria-label="Back to characters"
               >
-                <svg
-                  className="h-5 w-5 text-gray-600"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M15 19l-7-7 7-7"
-                  />
-                </svg>
+                <ChevronIcon direction="left" size={20} className="text-gray-600" />
               </Link>
               <h1 className="text-xl font-bold text-gray-800">Deleted</h1>
             </div>
@@ -207,19 +198,7 @@ function DeletedCharactersPage() {
                     className="flex-shrink-0 p-2 text-green-600 hover:bg-green-50 rounded-lg transition-colors"
                     aria-label={`Restore ${character.name}`}
                   >
-                    <svg
-                      className="h-5 w-5"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                      />
-                    </svg>
+                    <RestoreIcon size={20} />
                   </button>
                 </div>
               ))
@@ -236,19 +215,7 @@ function DeletedCharactersPage() {
             />
           ) : (
             <div className="flex flex-col items-center justify-center h-full text-gray-400">
-              <svg
-                className="h-16 w-16 mb-4 text-gray-300"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
-                />
-              </svg>
+              <TrashIcon size={64} className="mb-4 text-gray-300" />
               <p>Select a character to preview</p>
               <p className="text-sm">Click restore to bring them back</p>
             </div>
@@ -265,19 +232,7 @@ function DeletedCharactersPage() {
               className="p-1 rounded-lg hover:bg-gray-100 transition-colors"
               aria-label="Back to characters"
             >
-              <svg
-                className="h-5 w-5 text-gray-600"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
+              <ChevronIcon direction="left" size={20} className="text-gray-600" />
             </Link>
             <h1 className="text-xl font-bold text-gray-800">Deleted</h1>
           </div>

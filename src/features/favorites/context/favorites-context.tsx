@@ -1,15 +1,13 @@
 import {
   createContext,
   useContext,
-  useState,
   useCallback,
-  useEffect,
   type ReactNode,
 } from 'react';
 import type { CharacterId } from '@/core/types/global.types';
-import { createCharacterId } from '@/core/types/global.types';
 import type { FavoritesContextValue } from '../types/favorite.types';
 import { STORAGE_KEYS } from '@/shared/constants/app.constants';
+import { useLocalStorageSet } from '@/shared/hooks/use-local-storage-set';
 
 const FavoritesContext = createContext<FavoritesContextValue | null>(null);
 
@@ -22,38 +20,7 @@ interface FavoritesProviderProps {
  * Syncs with localStorage and handles cross-tab updates.
  */
 export function FavoritesProvider({ children }: FavoritesProviderProps) {
-  const [favorites, setFavorites] = useState<Set<CharacterId>>(() => {
-    try {
-      const stored = localStorage.getItem(STORAGE_KEYS.FAVORITES);
-      const parsed = stored ? (JSON.parse(stored) as string[]) : [];
-      return new Set(parsed.map(createCharacterId));
-    } catch {
-      return new Set();
-    }
-  });
-
-  useEffect(() => {
-    localStorage.setItem(
-      STORAGE_KEYS.FAVORITES,
-      JSON.stringify([...favorites])
-    );
-  }, [favorites]);
-
-  useEffect(() => {
-    const handleStorageChange = (event: StorageEvent) => {
-      if (event.key === STORAGE_KEYS.FAVORITES && event.newValue) {
-        try {
-          const parsed = JSON.parse(event.newValue) as string[];
-          setFavorites(new Set(parsed.map(createCharacterId)));
-        } catch {
-          // Ignore parse errors
-        }
-      }
-    };
-
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  const [favorites, setFavorites] = useLocalStorageSet(STORAGE_KEYS.FAVORITES);
 
   const toggleFavorite = useCallback((id: CharacterId) => {
     setFavorites((prev) => {
